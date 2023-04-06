@@ -44,7 +44,7 @@ public class MembershipsServiceImpl implements MembershipsService {
         UUID roleId = ofNullable(m.getRole()).map(Role::getId)
                 .orElseThrow(() -> new InvalidArgumentException(Role.class));
 
-        if (!userBelongsToTeam(m)) {
+        if (userNotBelongsToTeam(m.getTeamId(), m.getUserId())) {
             throw new InvalidRequest("Invalid 'Membership' object. " +
                     "The provided user doesn't belong to the provided team.");
         }
@@ -58,8 +58,8 @@ public class MembershipsServiceImpl implements MembershipsService {
         return membershipRepository.save(m);
     }
 
-    private boolean userBelongsToTeam(Membership m) {
-        return teamsService.getTeam(m.getTeamId()).getTeamMemberIds().contains(m.getUserId());
+    private boolean userNotBelongsToTeam(UUID teamId, UUID userId) {
+        return !teamsService.userBelongsToTeam(teamId, userId);
     }
 
     @Override

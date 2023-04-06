@@ -10,4 +10,6 @@ public interface TeamsService {
     Team getTeam(UUID id);
 
     List<Team> getTeams();
+
+    boolean userBelongsToTeam(UUID teamId, UUID userId);
 }

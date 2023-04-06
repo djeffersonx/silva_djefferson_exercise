@@ -26,4 +26,9 @@ public class TeamsServiceImpl implements TeamsService {
     public List<Team> getTeams() {
         return teamsClient.getTeams().getBody();
     }
+
+    @Override
+    public boolean userBelongsToTeam(UUID teamId, UUID userId) {
+        return getTeam(teamId).getTeamMemberIds().contains(userId);
+    }
 }
