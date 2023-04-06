@@ -1,13 +1,28 @@
 package com.ecore.roles.service;
 
+import com.ecore.roles.client.UsersClient;
 import com.ecore.roles.client.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface UsersService {
+@Service
+public class UsersService {
 
-    User getUser(UUID id);
+    private final UsersClient usersClient;
 
-    List<User> getUsers();
+    @Autowired
+    public UsersService(UsersClient usersClient) {
+        this.usersClient = usersClient;
+    }
+
+    public User getUser(UUID id) {
+        return usersClient.getUser(id).getBody();
+    }
+
+    public List<User> getUsers() {
+        return usersClient.getUsers().getBody();
+    }
 }

@@ -1,15 +1,33 @@
 package com.ecore.roles.service;
 
+import com.ecore.roles.client.TeamsClient;
 import com.ecore.roles.client.model.Team;
+import com.ecore.roles.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface TeamsService {
+@Service
+public class TeamsService {
 
-    Team getTeam(UUID id);
+    private final TeamsClient teamsClient;
 
-    List<Team> getTeams();
+    @Autowired
+    public TeamsService(TeamsClient teamsClient) {
+        this.teamsClient = teamsClient;
+    }
 
-    boolean userBelongsToTeam(UUID userId, UUID teamId);
+    public Team getTeam(UUID id) {
+        return teamsClient.getTeam(id).orElseThrow(() -> new ResourceNotFoundException(Team.class, id));
+    }
+
+    public List<Team> getTeams() {
+        return teamsClient.getTeams().getBody();
+    }
+
+    public boolean userBelongsToTeam(UUID userId, UUID teamId) {
+        return getTeam(teamId).getTeamMemberIds().contains(userId);
+    }
 }
