@@ -52,12 +52,12 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse getRole(UUID userId, UUID teamId) {
+    public static EcoreValidatableResponse getMembershipRole(UUID userId, UUID teamId) {
         return sendRequest(given()
-                .queryParam("teamMemberId", userId)
-                .queryParam("teamId", teamId)
+                .pathParam("userId", userId)
+                .pathParam("teamId", teamId)
                 .when()
-                .get("/v1/roles/search")
+                .get("/v1/roles/memberships/{teamId}/{userId}/role")
                 .then());
     }
 

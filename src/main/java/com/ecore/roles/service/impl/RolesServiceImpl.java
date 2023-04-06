@@ -50,7 +50,13 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public List<Role> GetRoles() {
+    public Role GetRole(UUID userId, UUID teamId) {
+        return roleRepository.findByTeamIdAndUserId(userId, teamId)
+                .orElseThrow(() -> new ResourceNotFoundException(Role.class, teamId));
+    }
+
+    @Override
+    public List<Role> GetRole() {
         return roleRepository.findAll();
     }
 

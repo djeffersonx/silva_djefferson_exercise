@@ -14,11 +14,11 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
-import static com.ecore.roles.utils.RestAssuredHelper.createMembership;
-import static com.ecore.roles.utils.RestAssuredHelper.getMemberships;
+import static com.ecore.roles.utils.RestAssuredHelper.*;
 import static com.ecore.roles.utils.TestData.*;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MembershipsApiTests {
@@ -159,6 +159,37 @@ public class MembershipsApiTests {
     void shouldFailToGetAllMembershipsWhenRoleIdIsNull() {
         getMemberships(null)
                 .validate(400, "Bad Request");
+    }
+
+    @Test
+    void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingUserId() {
+        RestAssuredHelper.getMembershipRole(null, ORDINARY_CORAL_LYNX_TEAM_UUID)
+                .validate(400, "Bad Request");
+    }
+
+    @Test
+    void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingTeamId() {
+        RestAssuredHelper.getMembershipRole(GIANNI_USER_UUID, null)
+                .validate(400, "Bad Request");
+    }
+
+    @Test
+    void shouldFailToGetRoleByUserIdAndTeamIdWhenItDoesNotExist() {
+        mockGetTeamById(mockServer, UUID_1, null);
+        getMembershipRole(GIANNI_USER_UUID, UUID_1)
+                .validate(404, format("Role %s not found", UUID_1));
+    }
+
+    @Test
+    void shouldGetRoleByUserIdAndTeamId() {
+        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, ORDINARY_CORAL_LYNX_TEAM());
+        createMembership(expectedMembership)
+                .statusCode(201);
+
+        RestAssuredHelper.getMembershipRole(expectedMembership.getUserId(), expectedMembership.getTeamId())
+                .statusCode(200)
+                .body("name", equalTo(expectedMembership.getRole().getName()));
     }
 
     private MembershipDto createDefaultMembership() {
