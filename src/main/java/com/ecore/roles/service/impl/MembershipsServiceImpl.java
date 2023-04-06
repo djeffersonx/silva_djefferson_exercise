@@ -39,27 +39,27 @@ public class MembershipsServiceImpl implements MembershipsService {
     }
 
     @Override
-    public Membership assignRoleToMembership(@NonNull Membership m) {
+    public Membership create(@NonNull Membership membership) {
 
-        UUID roleId = ofNullable(m.getRole()).map(Role::getId)
+        UUID roleId = ofNullable(membership.getRole()).map(Role::getId)
                 .orElseThrow(() -> new InvalidArgumentException(Role.class));
 
-        if (userNotBelongsToTeam(m.getTeamId(), m.getUserId())) {
+        if (userNotBelongsToTeam(membership.getUserId(), membership.getTeamId())) {
             throw new InvalidRequest("Invalid 'Membership' object. " +
                     "The provided user doesn't belong to the provided team.");
         }
 
-        if (membershipRepository.findByUserIdAndTeamId(m.getUserId(), m.getTeamId())
-                .isPresent()) {
+        if (membershipRepository
+                .findByUserIdAndTeamId(membership.getUserId(), membership.getTeamId()).isPresent()) {
             throw new ResourceExistsException(Membership.class);
         }
 
         roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));
-        return membershipRepository.save(m);
+        return membershipRepository.save(membership);
     }
 
-    private boolean userNotBelongsToTeam(UUID teamId, UUID userId) {
-        return !teamsService.userBelongsToTeam(teamId, userId);
+    private boolean userNotBelongsToTeam(UUID userId, UUID teamId) {
+        return !teamsService.userBelongsToTeam(userId, teamId);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MembershipsServiceImpl implements MembershipsService {
     }
 
     @Override
-    public Membership getMembership(UUID userId, UUID teamId) {
+    public Membership getMembership(@NonNull UUID userId, @NonNull UUID teamId) {
         return membershipRepository.findByUserIdAndTeamId(userId, teamId)
                 .orElseThrow(() -> ResourceNotFoundException.Membership.by(userId, teamId));
     }

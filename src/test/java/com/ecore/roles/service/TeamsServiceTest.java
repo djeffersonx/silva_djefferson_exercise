@@ -11,8 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM;
-import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM_UUID;
+import static com.ecore.roles.objectmother.TeamObjectMother.systemTeam;
+import static com.ecore.roles.objectmother.TeamObjectMother.defaultTeamId;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -26,9 +26,9 @@ class TeamsServiceTest {
 
     @Test
     void shouldGetTeamWhenTeamIdExists() {
-        Team ordinaryCoralLynxTeam = ORDINARY_CORAL_LYNX_TEAM();
-        when(TeamsClient.getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID))
+        Team ordinaryCoralLynxTeam = systemTeam();
+        when(TeamsClient.getTeam(defaultTeamId))
                 .thenReturn(Optional.of(ordinaryCoralLynxTeam));
-        assertNotNull(TeamsService.getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID));
+        assertNotNull(TeamsService.getTeam(defaultTeamId));
     }
 }

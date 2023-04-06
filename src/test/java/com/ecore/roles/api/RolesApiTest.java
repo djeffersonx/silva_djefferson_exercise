@@ -18,11 +18,11 @@ import static com.ecore.roles.utils.RestAssuredHelper.createRole;
 import static com.ecore.roles.utils.RestAssuredHelper.getRole;
 import static com.ecore.roles.utils.RestAssuredHelper.getRoles;
 import static com.ecore.roles.utils.RestAssuredHelper.sendRequest;
-import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
-import static com.ecore.roles.utils.TestData.DEVOPS_ROLE;
-import static com.ecore.roles.utils.TestData.PRODUCT_OWNER_ROLE;
-import static com.ecore.roles.utils.TestData.TESTER_ROLE;
-import static com.ecore.roles.utils.TestData.UUID_1;
+import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
+import static com.ecore.roles.objectmother.RoleObjectMother.devopsTeam;
+import static com.ecore.roles.objectmother.RoleObjectMother.productOwnerRole;
+import static com.ecore.roles.objectmother.RoleObjectMother.testerRole;
+import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
 import static io.restassured.RestAssured.when;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +49,7 @@ public class RolesApiTest {
     void setUp() {
         mockServer = MockRestServiceServer.createServer(restTemplate);
         RestAssuredHelper.setUp(port);
-        Optional<Role> devOpsRole = roleRepository.findByName(DEVOPS_ROLE().getName());
+        Optional<Role> devOpsRole = roleRepository.findByName(devopsTeam().getName());
         devOpsRole.ifPresent(roleRepository::delete);
     }
 
@@ -63,7 +63,7 @@ public class RolesApiTest {
 
     @Test
     void shouldCreateNewRole() {
-        Role expectedRole = DEVOPS_ROLE();
+        Role expectedRole = devopsTeam();
 
         RoleDto actualRole = createRole(expectedRole)
                 .statusCode(201)
@@ -92,7 +92,7 @@ public class RolesApiTest {
 
     @Test
     void shouldFailToCreateNewRoleWhenNameAlreadyExists() {
-        createRole(DEVELOPER_ROLE())
+        createRole(developerRole())
                 .validate(400, "Role already exists");
     }
 
@@ -102,14 +102,14 @@ public class RolesApiTest {
                 .extract().as(RoleDto[].class);
 
         assertThat(roles.length).isGreaterThanOrEqualTo(3);
-        assertThat(roles).contains(RoleDto.fromModel(DEVELOPER_ROLE()));
-        assertThat(roles).contains(RoleDto.fromModel(PRODUCT_OWNER_ROLE()));
-        assertThat(roles).contains(RoleDto.fromModel(TESTER_ROLE()));
+        assertThat(roles).contains(RoleDto.fromModel(developerRole()));
+        assertThat(roles).contains(RoleDto.fromModel(productOwnerRole()));
+        assertThat(roles).contains(RoleDto.fromModel(testerRole()));
     }
 
     @Test
     void shouldGetRoleById() {
-        Role expectedRole = DEVELOPER_ROLE();
+        Role expectedRole = developerRole();
 
         getRole(expectedRole.getId())
                 .statusCode(200)
@@ -118,8 +118,8 @@ public class RolesApiTest {
 
     @Test
     void shouldFailToGetRoleById() {
-        getRole(UUID_1)
-                .validate(404, format("Role %s not found", UUID_1));
+        getRole(teamLeadId)
+                .validate(404, format("Role %s not found", teamLeadId));
     }
 
 }

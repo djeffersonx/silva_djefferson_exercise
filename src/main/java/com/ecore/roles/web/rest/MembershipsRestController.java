@@ -29,7 +29,7 @@ public class MembershipsRestController implements MembershipsApi {
             produces = {"application/json"})
     public ResponseEntity<MembershipDto> assignRoleToMembership(
             @NotNull @Valid @RequestBody MembershipDto membershipDto) {
-        Membership membership = membershipsService.assignRoleToMembership(membershipDto.toModel());
+        Membership membership = membershipsService.create(membershipDto.toModel());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(MembershipDto.fromModel(membership));

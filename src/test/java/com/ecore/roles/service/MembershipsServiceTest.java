@@ -14,8 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.ecore.roles.utils.TestData.DEFAULT_MEMBERSHIP;
-import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
+import static com.ecore.roles.objectmother.MembershipObjectMother.defaultMembership;
+import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,38 +40,35 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldCreateMembership() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        when(roleRepository.findById(expectedMembership.getRole().getId()))
-                .thenReturn(Optional.ofNullable(DEVELOPER_ROLE()));
-        when(membershipRepository.findByUserIdAndTeamId(expectedMembership.getUserId(),
-                expectedMembership.getTeamId()))
-                        .thenReturn(Optional.empty());
-        when(membershipRepository
-                .save(expectedMembership))
-                        .thenReturn(expectedMembership);
+        Membership expectedMembership = defaultMembership();
 
-        Membership actualMembership = membershipsService.assignRoleToMembership(expectedMembership);
+        givenRoleExists(expectedMembership);
+        givenMembershipDoesntExistsYet(expectedMembership, Optional.empty());
+        givenMembershipRepositoryPersistesWithSuccess(expectedMembership);
+        givenUserBelongsToTheTeam(expectedMembership);
+
+        Membership actualMembership = membershipsService.create(expectedMembership);
 
         assertNotNull(actualMembership);
         assertEquals(actualMembership, expectedMembership);
         verify(roleRepository).findById(expectedMembership.getRole().getId());
     }
 
+
     @Test
     public void shouldFailToCreateMembershipWhenMembershipsIsNull() {
         assertThrows(NullPointerException.class,
-                () -> membershipsService.assignRoleToMembership(null));
+                () -> membershipsService.create(null));
     }
 
     @Test
     public void shouldFailToCreateMembershipWhenItExists() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        when(membershipRepository.findByUserIdAndTeamId(expectedMembership.getUserId(),
-                expectedMembership.getTeamId()))
-                        .thenReturn(Optional.of(expectedMembership));
+        Membership expectedMembership = defaultMembership();
+        givenMembershipDoesntExistsYet(expectedMembership, Optional.of(expectedMembership));
+        givenUserBelongsToTheTeam(expectedMembership);
 
         ResourceExistsException exception = assertThrows(ResourceExistsException.class,
-                () -> membershipsService.assignRoleToMembership(expectedMembership));
+                () -> membershipsService.create(expectedMembership));
 
         assertEquals("Membership already exists", exception.getMessage());
         verify(roleRepository, times(0)).getById(any());
@@ -81,11 +78,11 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldFailToCreateMembershipWhenItHasInvalidRole() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(null);
 
         InvalidArgumentException exception = assertThrows(InvalidArgumentException.class,
-                () -> membershipsService.assignRoleToMembership(expectedMembership));
+                () -> membershipsService.create(expectedMembership));
 
         assertEquals("Invalid 'Role' object", exception.getMessage());
         verify(membershipRepository, times(0)).findByUserIdAndTeamId(any(), any());
@@ -98,6 +95,24 @@ class MembershipsServiceTest {
     public void shouldFailToGetMembershipsWhenRoleIdIsNull() {
         assertThrows(NullPointerException.class,
                 () -> membershipsService.getMemberships(null));
+    }
+
+    private void givenRoleExists(Membership expectedMembership) {
+        when(roleRepository.findById(expectedMembership.getRole().getId()))
+                .thenReturn(Optional.ofNullable(developerRole()));
+    }
+
+    private void givenMembershipDoesntExistsYet(Membership expectedMembership, Optional<Membership> empty) {
+        when(membershipRepository.findByUserIdAndTeamId(expectedMembership.getUserId(), expectedMembership.getTeamId()))
+                .thenReturn(empty);
+    }
+
+    private void givenMembershipRepositoryPersistesWithSuccess(Membership expectedMembership) {
+        when(membershipRepository.save(expectedMembership)).thenReturn(expectedMembership);
+    }
+
+    private void givenUserBelongsToTheTeam(Membership expectedMembership) {
+        when(teamsService.userBelongsToTeam(expectedMembership.getUserId(), expectedMembership.getTeamId())).thenReturn(true);
     }
 
 }

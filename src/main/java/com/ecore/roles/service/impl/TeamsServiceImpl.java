@@ -29,7 +29,7 @@ public class TeamsServiceImpl implements TeamsService {
     }
 
     @Override
-    public boolean userBelongsToTeam(UUID teamId, UUID userId) {
+    public boolean userBelongsToTeam(UUID userId, UUID teamId) {
         return getTeam(teamId).getTeamMemberIds().contains(userId);
     }
 }

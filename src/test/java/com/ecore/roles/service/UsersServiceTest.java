@@ -3,6 +3,7 @@ package com.ecore.roles.service;
 import com.ecore.roles.client.UsersClient;
 import com.ecore.roles.client.model.User;
 import com.ecore.roles.service.impl.UsersServiceImpl;
+import com.ecore.roles.objectmother.TeamObjectMother;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,8 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static com.ecore.roles.utils.TestData.GIANNI_USER;
-import static com.ecore.roles.utils.TestData.UUID_1;
+import static com.ecore.roles.objectmother.UserObjectMother.defaultUser;
+import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -26,12 +27,12 @@ class UsersServiceTest {
 
     @Test
     void shouldGetUserWhenUserIdExists() {
-        User gianniUser = GIANNI_USER();
-        when(usersClient.getUser(UUID_1))
+        User gianniUser = defaultUser();
+        when(usersClient.getUser(teamLeadId))
                 .thenReturn(ResponseEntity
                         .status(HttpStatus.OK)
                         .body(gianniUser));
 
-        assertNotNull(usersService.getUser(UUID_1));
+        assertNotNull(usersService.getUser(teamLeadId));
     }
 }

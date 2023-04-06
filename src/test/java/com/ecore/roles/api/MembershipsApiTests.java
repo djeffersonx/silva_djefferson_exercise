@@ -14,13 +14,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import static com.ecore.roles.objectmother.UserObjectMother.userIdThree;
 import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
 import static com.ecore.roles.utils.RestAssuredHelper.*;
-import static com.ecore.roles.utils.TestData.*;
-import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM;
+import static com.ecore.roles.objectmother.TeamObjectMother.*;
+import static com.ecore.roles.objectmother.TeamObjectMother.systemTeam;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+
+import static com.ecore.roles.objectmother.MembershipObjectMother.defaultMembership;
+import static com.ecore.roles.objectmother.MembershipObjectMother.invalidMembership;
+import static com.ecore.roles.objectmother.RoleObjectMother.developerRoleId;
+import static com.ecore.roles.objectmother.UserObjectMother.userIdThree;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MembershipsApiTests {
@@ -48,7 +54,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldCreateRoleMembership() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
 
         MembershipDto actualMembership = createDefaultMembership();
 
@@ -64,7 +70,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleIsNull() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(null);
 
         createMembership(expectedMembership)
@@ -73,7 +79,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleIdIsNull() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(Role.builder().build());
 
         createMembership(expectedMembership)
@@ -82,7 +88,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenUserIdIsNull() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setUserId(null);
 
         createMembership(expectedMembership)
@@ -91,7 +97,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamIdISNull() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setTeamId(null);
 
         createMembership(expectedMembership)
@@ -102,23 +108,23 @@ public class MembershipsApiTests {
     void shouldFailToCreateRoleMembershipWhenMembershipAlreadyExists() {
         createDefaultMembership();
 
-        createMembership(DEFAULT_MEMBERSHIP())
+        createMembership(defaultMembership())
                 .validate(400, "Membership already exists");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleDoesNotExist() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        expectedMembership.setRole(Role.builder().id(UUID_1).build());
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+        Membership expectedMembership = defaultMembership();
+        expectedMembership.setRole(Role.builder().id(teamLeadId).build());
+        mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         createMembership(expectedMembership)
-                .validate(404, format("Role %s not found", UUID_1));
+                .validate(404, format("Role %s not found", teamLeadId));
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamDoesNotExist() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), null);
 
         createMembership(expectedMembership)
@@ -127,8 +133,8 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
-        Membership expectedMembership = INVALID_MEMBERSHIP();
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+        Membership expectedMembership = invalidMembership();
+        mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         createMembership(expectedMembership)
                 .validate(400,
@@ -138,7 +144,7 @@ public class MembershipsApiTests {
     @Test
     void shouldGetAllMemberships() {
         createDefaultMembership();
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        Membership expectedMembership = defaultMembership();
 
         MembershipDto[] actualMemberships = getMemberships(expectedMembership.getRole().getId())
                 .statusCode(200)
@@ -151,7 +157,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldGetAllMembershipsButReturnsEmptyList() {
-        MembershipDto[] actualMemberships = getMemberships(DEVELOPER_ROLE_UUID)
+        MembershipDto[] actualMemberships = getMemberships(developerRoleId)
                 .statusCode(200)
                 .extract().as(MembershipDto[].class);
 
@@ -178,15 +184,15 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToGetRoleByUserIdAndTeamIdWhenItDoesNotExist() {
-        mockGetTeamById(mockServer, UUID_1, null);
-        getMembershipRole(GIANNI_USER_UUID, UUID_1)
-                .validate(404, format("Membership %s %s not found", GIANNI_USER_UUID, UUID_1));
+        mockGetTeamById(mockServer, teamLeadId, null);
+        getMembershipRole(userIdThree, teamLeadId)
+                .validate(404, format("Membership %s %s not found", userIdThree, teamLeadId));
     }
 
     @Test
     void shouldGetRoleByUserIdAndTeamId() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, ORDINARY_CORAL_LYNX_TEAM());
+        Membership expectedMembership = defaultMembership();
+        mockGetTeamById(mockServer, defaultTeamId, systemTeam());
         createMembership(expectedMembership)
                 .statusCode(HttpStatus.CREATED.value());
 
@@ -196,8 +202,8 @@ public class MembershipsApiTests {
     }
 
     private MembershipDto createDefaultMembership() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+        Membership expectedMembership = defaultMembership();
+        mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         return createMembership(expectedMembership)
                 .statusCode(201)
