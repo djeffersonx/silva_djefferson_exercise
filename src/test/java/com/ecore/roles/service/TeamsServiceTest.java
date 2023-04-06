@@ -8,8 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
+import java.util.Optional;
 
 import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM;
 import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM_UUID;
@@ -28,9 +28,7 @@ class TeamsServiceTest {
     void shouldGetTeamWhenTeamIdExists() {
         Team ordinaryCoralLynxTeam = ORDINARY_CORAL_LYNX_TEAM();
         when(TeamsClient.getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID))
-                .thenReturn(ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(ordinaryCoralLynxTeam));
+                .thenReturn(Optional.of(ordinaryCoralLynxTeam));
         assertNotNull(TeamsService.getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID));
     }
 }

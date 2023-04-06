@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -19,12 +20,10 @@ public class TeamsClient {
     private final RestTemplate restTemplate;
     private final ClientsConfigurationProperties clientsConfigurationProperties;
 
-    public ResponseEntity<Team> getTeam(UUID id) {
-        return restTemplate.exchange(
+    public Optional<Team> getTeam(UUID id) {
+        return Optional.ofNullable(restTemplate.exchange(
                 clientsConfigurationProperties.getTeamsApiHost() + "/" + id,
-                HttpMethod.GET,
-                null,
-                Team.class);
+                HttpMethod.GET, null, Team.class).getBody());
     }
 
     public ResponseEntity<List<Team>> getTeams() {

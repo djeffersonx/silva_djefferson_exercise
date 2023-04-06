@@ -70,6 +70,6 @@ public class MembershipsServiceImpl implements MembershipsService {
     @Override
     public Membership getMembership(UUID userId, UUID teamId) {
         return membershipRepository.findByUserIdAndTeamId(userId, teamId)
-                .orElseThrow(() -> new ResourceNotFoundException(Role.class, userId));
+                .orElseThrow(() -> ResourceNotFoundException.Membership.by(userId, teamId));
     }
 }
