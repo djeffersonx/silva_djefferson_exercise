@@ -1,10 +1,10 @@
 package com.ecore.roles.api;
 
-import com.ecore.roles.model.Membership;
-import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.MembershipRepository;
+import com.ecore.roles.domain.model.Membership;
+import com.ecore.roles.domain.model.Role;
+import com.ecore.roles.domain.repository.MembershipRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
-import com.ecore.roles.web.dto.MembershipDto;
+import com.ecore.roles.application.controller.resources.outcome.MembershipResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static com.ecore.roles.objectmother.MembershipObjectMother.defaultMembership;
 import static com.ecore.roles.objectmother.MembershipObjectMother.invalidMembership;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRoleId;
-import static com.ecore.roles.objectmother.UserObjectMother.userIdThree;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MembershipsApiTests {
@@ -56,10 +55,10 @@ public class MembershipsApiTests {
     void shouldCreateRoleMembership() {
         Membership expectedMembership = defaultMembership();
 
-        MembershipDto actualMembership = createDefaultMembership();
+        MembershipResponse actualMembership = createDefaultMembership();
 
         assertThat(actualMembership.getId()).isNotNull();
-        assertThat(actualMembership).isEqualTo(MembershipDto.fromModel(expectedMembership));
+        assertThat(actualMembership).isEqualTo(MembershipResponse.fromModel(expectedMembership));
     }
 
     @Test
@@ -146,20 +145,20 @@ public class MembershipsApiTests {
         createDefaultMembership();
         Membership expectedMembership = defaultMembership();
 
-        MembershipDto[] actualMemberships = getMemberships(expectedMembership.getRole().getId())
+        MembershipResponse[] actualMemberships = getMemberships(expectedMembership.getRole().getId())
                 .statusCode(200)
-                .extract().as(MembershipDto[].class);
+                .extract().as(MembershipResponse[].class);
 
         assertThat(actualMemberships.length).isEqualTo(1);
         assertThat(actualMemberships[0].getId()).isNotNull();
-        assertThat(actualMemberships[0]).isEqualTo(MembershipDto.fromModel(expectedMembership));
+        assertThat(actualMemberships[0]).isEqualTo(MembershipResponse.fromModel(expectedMembership));
     }
 
     @Test
     void shouldGetAllMembershipsButReturnsEmptyList() {
-        MembershipDto[] actualMemberships = getMemberships(developerRoleId)
+        MembershipResponse[] actualMemberships = getMemberships(developerRoleId)
                 .statusCode(200)
-                .extract().as(MembershipDto[].class);
+                .extract().as(MembershipResponse[].class);
 
         assertThat(actualMemberships.length).isEqualTo(0);
     }
@@ -201,13 +200,13 @@ public class MembershipsApiTests {
                 .body("name", equalTo(expectedMembership.getRole().getName()));
     }
 
-    private MembershipDto createDefaultMembership() {
+    private MembershipResponse createDefaultMembership() {
         Membership expectedMembership = defaultMembership();
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         return createMembership(expectedMembership)
                 .statusCode(201)
-                .extract().as(MembershipDto.class);
+                .extract().as(MembershipResponse.class);
     }
 
 }

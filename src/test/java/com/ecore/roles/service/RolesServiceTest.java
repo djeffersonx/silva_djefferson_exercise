@@ -1,9 +1,11 @@
 package com.ecore.roles.service;
 
+import com.ecore.roles.domain.service.MembershipsService;
+import com.ecore.roles.domain.service.RolesService;
 import com.ecore.roles.exception.ResourceNotFoundException;
-import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.MembershipRepository;
-import com.ecore.roles.repository.RoleRepository;
+import com.ecore.roles.domain.model.Role;
+import com.ecore.roles.domain.repository.MembershipRepository;
+import com.ecore.roles.domain.repository.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,7 +43,7 @@ class RolesServiceTest {
         Role developerRole = developerRole();
         when(roleRepository.save(developerRole)).thenReturn(developerRole);
 
-        Role role = rolesService.CreateRole(developerRole);
+        Role role = rolesService.create(developerRole);
 
         assertNotNull(role);
         assertEquals(developerRole, role);
@@ -50,7 +52,7 @@ class RolesServiceTest {
     @Test
     public void shouldFailToCreateRoleWhenRoleIsNull() {
         assertThrows(NullPointerException.class,
-                () -> rolesService.CreateRole(null));
+                () -> rolesService.create(null));
     }
 
     @Test
@@ -58,7 +60,7 @@ class RolesServiceTest {
         Role developerRole = developerRole();
         when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
 
-        Role role = rolesService.GetRole(developerRole.getId());
+        Role role = rolesService.getRoles(developerRole.getId());
 
         assertNotNull(role);
         assertEquals(developerRole, role);
@@ -67,7 +69,7 @@ class RolesServiceTest {
     @Test
     public void shouldFailToGetRoleWhenRoleIdDoesNotExist() {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> rolesService.GetRole(teamLeadId));
+                () -> rolesService.getRoles(teamLeadId));
 
         assertEquals(format("Role %s not found", teamLeadId), exception.getMessage());
     }

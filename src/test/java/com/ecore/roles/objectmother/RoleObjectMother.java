@@ -1,6 +1,6 @@
 package com.ecore.roles.objectmother;
 
-import com.ecore.roles.model.Role;
+import com.ecore.roles.domain.model.Role;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package com.ecore.roles.utils;
 
-import com.ecore.roles.client.model.Team;
-import com.ecore.roles.client.model.User;
+import com.ecore.roles.domain.client.resources.Team;
+import com.ecore.roles.domain.client.resources.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpMethod;

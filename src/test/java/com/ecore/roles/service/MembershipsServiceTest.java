@@ -1,10 +1,13 @@
 package com.ecore.roles.service;
 
+import com.ecore.roles.domain.service.MembershipsService;
+import com.ecore.roles.domain.service.TeamsService;
+import com.ecore.roles.domain.service.UsersService;
 import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceExistsException;
-import com.ecore.roles.model.Membership;
-import com.ecore.roles.repository.MembershipRepository;
-import com.ecore.roles.repository.RoleRepository;
+import com.ecore.roles.domain.model.Membership;
+import com.ecore.roles.domain.repository.MembershipRepository;
+import com.ecore.roles.domain.repository.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

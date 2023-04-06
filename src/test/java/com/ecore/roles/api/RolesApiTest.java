@@ -1,9 +1,9 @@
 package com.ecore.roles.api;
 
-import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.RoleRepository;
+import com.ecore.roles.domain.model.Role;
+import com.ecore.roles.domain.repository.RoleRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
-import com.ecore.roles.web.dto.RoleDto;
+import com.ecore.roles.application.controller.resources.outcome.RoleResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,9 +65,9 @@ public class RolesApiTest {
     void shouldCreateNewRole() {
         Role expectedRole = devopsTeam();
 
-        RoleDto actualRole = createRole(expectedRole)
+        RoleResponse actualRole = createRole(expectedRole)
                 .statusCode(201)
-                .extract().as(RoleDto.class);
+                .extract().as(RoleResponse.class);
 
         assertThat(actualRole.getName()).isEqualTo(expectedRole.getName());
     }
@@ -98,13 +98,13 @@ public class RolesApiTest {
 
     @Test
     void shouldGetAllRoles() {
-        RoleDto[] roles = getRoles()
-                .extract().as(RoleDto[].class);
+        RoleResponse[] roles = getRoles()
+                .extract().as(RoleResponse[].class);
 
         assertThat(roles.length).isGreaterThanOrEqualTo(3);
-        assertThat(roles).contains(RoleDto.fromModel(developerRole()));
-        assertThat(roles).contains(RoleDto.fromModel(productOwnerRole()));
-        assertThat(roles).contains(RoleDto.fromModel(testerRole()));
+        assertThat(roles).contains(RoleResponse.fromModel(developerRole()));
+        assertThat(roles).contains(RoleResponse.fromModel(productOwnerRole()));
+        assertThat(roles).contains(RoleResponse.fromModel(testerRole()));
     }
 
     @Test

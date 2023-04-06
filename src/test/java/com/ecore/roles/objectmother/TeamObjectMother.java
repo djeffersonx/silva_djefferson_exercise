@@ -1,6 +1,6 @@
 package com.ecore.roles.objectmother;
 
-import com.ecore.roles.client.model.Team;
+import com.ecore.roles.domain.client.resources.Team;
 import org.assertj.core.util.Lists;
 
 import java.util.UUID;

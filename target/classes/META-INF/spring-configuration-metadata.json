@@ -2,20 +2,20 @@
   "groups": [
     {
       "name": "clients",
-      "type": "com.ecore.roles.configuration.ClientsConfigurationProperties",
-      "sourceType": "com.ecore.roles.configuration.ClientsConfigurationProperties"
+      "type": "com.ecore.roles.infrastructure.configuration.ClientsConfigurationProperties",
+      "sourceType": "com.ecore.roles.infrastructure.configuration.ClientsConfigurationProperties"
     }
   ],
   "properties": [
     {
       "name": "clients.teams-api-host",
       "type": "java.lang.String",
-      "sourceType": "com.ecore.roles.configuration.ClientsConfigurationProperties"
+      "sourceType": "com.ecore.roles.infrastructure.configuration.ClientsConfigurationProperties"
     },
     {
       "name": "clients.users-api-host",
       "type": "java.lang.String",
-      "sourceType": "com.ecore.roles.configuration.ClientsConfigurationProperties"
+      "sourceType": "com.ecore.roles.infrastructure.configuration.ClientsConfigurationProperties"
     }
   ],
   "hints": []
