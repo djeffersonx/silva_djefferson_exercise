@@ -61,7 +61,8 @@ public class MembershipsRestController implements MembershipsApi {
             path = "/{userId}/{teamId}",
             produces = {"application/json"})
     public ResponseEntity<RoleDto> getMembership(
-            @PathVariable UUID userId, @PathVariable UUID teamId) {
+            @PathVariable UUID userId,
+            @PathVariable UUID teamId) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -16,6 +16,7 @@ public interface MembershipsApi {
             UUID roleId);
 
     ResponseEntity<RoleDto> getMembership(
-            UUID teamId, UUID userId);
+            UUID teamId,
+            UUID userId);
 
 }
