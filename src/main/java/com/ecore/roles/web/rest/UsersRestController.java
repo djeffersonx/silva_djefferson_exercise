@@ -1,7 +1,6 @@
 package com.ecore.roles.web.rest;
 
 import com.ecore.roles.service.UsersService;
-import com.ecore.roles.web.UsersApi;
 import com.ecore.roles.web.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,10 @@ import static com.ecore.roles.web.dto.UserDto.fromModel;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/v1/users")
-public class UsersRestController implements UsersApi {
+public class UsersRestController {
 
     private final UsersService usersService;
 
-    @Override
     @PostMapping(
             produces = {"application/json"})
     public ResponseEntity<List<UserDto>> getUsers() {
@@ -34,7 +32,6 @@ public class UsersRestController implements UsersApi {
                         .collect(Collectors.toList()));
     }
 
-    @Override
     @PostMapping(
             path = "/{userId}",
             produces = {"application/json"})

@@ -2,7 +2,6 @@ package com.ecore.roles.web.rest;
 
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.service.MembershipsService;
-import com.ecore.roles.web.MembershipsApi;
 import com.ecore.roles.web.dto.MembershipDto;
 import com.ecore.roles.web.dto.RoleDto;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +18,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/v1/roles/memberships")
-public class MembershipsRestController implements MembershipsApi {
+public class MembershipsRestController {
 
     private final MembershipsService membershipsService;
 
-    @Override
     @PostMapping(
             consumes = {"application/json"},
             produces = {"application/json"})
@@ -35,7 +33,6 @@ public class MembershipsRestController implements MembershipsApi {
                 .body(MembershipDto.fromModel(membership));
     }
 
-    @Override
     @GetMapping(
             path = "/search",
             produces = {"application/json"})
@@ -56,7 +53,6 @@ public class MembershipsRestController implements MembershipsApi {
                 .body(newMembershipDto);
     }
 
-    @Override
     @GetMapping(
             path = "/{userId}/{teamId}",
             produces = {"application/json"})
