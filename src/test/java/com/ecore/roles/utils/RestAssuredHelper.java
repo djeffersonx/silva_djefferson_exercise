@@ -57,7 +57,7 @@ public class RestAssuredHelper {
                 .pathParam("userId", userId)
                 .pathParam("teamId", teamId)
                 .when()
-                .get("/v1/roles/memberships/{teamId}/{userId}/role")
+                .get("/v1/roles/memberships/{userId}/{teamId}")
                 .then());
     }
 

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -185,10 +186,10 @@ public class MembershipsApiTests {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
         mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, ORDINARY_CORAL_LYNX_TEAM());
         createMembership(expectedMembership)
-                .statusCode(201);
+                .statusCode(HttpStatus.CREATED.value());
 
         RestAssuredHelper.getMembershipRole(expectedMembership.getUserId(), expectedMembership.getTeamId())
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .body("name", equalTo(expectedMembership.getRole().getName()));
     }
 
