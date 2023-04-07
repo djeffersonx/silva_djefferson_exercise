@@ -4,6 +4,7 @@ import com.ecore.roles.domain.client.UsersClient;
 import com.ecore.roles.domain.client.resources.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Validated
 public class UsersService {
 
     private final UsersClient usersClient;

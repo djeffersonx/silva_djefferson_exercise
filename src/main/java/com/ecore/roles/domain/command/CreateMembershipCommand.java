@@ -1,12 +1,9 @@
-package com.ecore.roles.application.controller.v1.resources.income;
+package com.ecore.roles.domain.command;
 
-import com.ecore.roles.domain.command.CreateMembershipCommand;
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.model.Role;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -16,29 +13,23 @@ import java.util.UUID;
 @Setter
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class CreateMembershipRequest {
+public class CreateMembershipCommand {
 
-    @JsonProperty
-    @Valid
     @NotNull(message = "Role identifier is required")
     @EqualsAndHashCode.Include
     private UUID roleId;
 
-    @JsonProperty(value = "teamMemberId")
-    @Valid
     @NotNull(message = "User identifier is required")
     @EqualsAndHashCode.Include
     private UUID userId;
 
-    @JsonProperty
-    @Valid
     @NotNull(message = "Team identifier is required")
     @EqualsAndHashCode.Include
     private UUID teamId;
 
-    public CreateMembershipCommand toCommand() {
-        return CreateMembershipCommand.builder()
-                .roleId(this.roleId)
+    public Membership toModel() {
+        return Membership.builder()
+                .role(Role.builder().id(this.roleId).build())
                 .userId(this.userId)
                 .teamId(this.teamId)
                 .build();

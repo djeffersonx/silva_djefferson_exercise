@@ -3,7 +3,6 @@ package com.ecore.roles.application.controller.v1;
 import com.ecore.roles.application.controller.v1.resources.income.CreateMembershipRequest;
 import com.ecore.roles.application.controller.v1.resources.outcome.MembershipResponse;
 import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
-import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.service.MembershipsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ public class MembershipsRestController {
     public MembershipResponse create(
             @Valid @RequestBody CreateMembershipRequest request) {
         return MembershipResponse.fromModel(
-                membershipsService.create(request.toModel())
+                membershipsService.create(request.toCommand())
         );
     }
 

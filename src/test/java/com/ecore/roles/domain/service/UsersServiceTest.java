@@ -1,4 +1,4 @@
-package com.ecore.roles.service;
+package com.ecore.roles.domain.service;
 
 import com.ecore.roles.domain.client.UsersClient;
 import com.ecore.roles.domain.client.resources.User;
