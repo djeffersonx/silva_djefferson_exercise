@@ -2,7 +2,6 @@ package com.ecore.roles.api;
 
 import com.ecore.roles.application.controller.v1.resources.outcome.TeamResponse;
 import com.ecore.roles.domain.client.resources.Team;
-import com.ecore.roles.domain.repository.RoleRepository;
 import com.ecore.roles.objectmother.TeamObjectMother;
 import com.ecore.roles.utils.H2DataBaseExtension;
 import com.ecore.roles.utils.MockUtils;
@@ -38,7 +37,7 @@ public class TeamsApiTest {
     private int port;
 
     @Autowired
-    public TeamsApiTest(RestTemplate restTemplate, RoleRepository roleRepository) {
+    public TeamsApiTest(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
@@ -52,7 +51,7 @@ public class TeamsApiTest {
     class GetTeamById {
         @Test
         void givenTeamExistShouldReturnIt() {
-            Team team = TeamObjectMother.networkTeam();
+            Team team = TeamObjectMother.engineeringTeam();
             MockUtils.givenGetTeamByIdAnswer(mockServer, team.getId(), team);
             TeamResponse teamResponse = sendRequest(
                     given()
@@ -66,7 +65,7 @@ public class TeamsApiTest {
 
         @Test
         void givenTeamNotExistsShouldReturnNotFound() {
-            Team team = TeamObjectMother.networkTeam();
+            Team team = TeamObjectMother.engineeringTeam();
             MockUtils.givenGetTeamByIdAnswer(mockServer, team.getId(), null);
 
             sendRequest(
@@ -94,7 +93,7 @@ public class TeamsApiTest {
         @Test
         void givenExistsTeamsListShouldReturnIt() {
             MockUtils.givenGetTeamsAnswer(mockServer, List.of(
-                    TeamObjectMother.networkTeam(), TeamObjectMother.engineeringTeam())
+                    TeamObjectMother.engineeringTeam(), TeamObjectMother.networkTeam())
             );
 
             List<TeamResponse> users = Arrays.asList(sendRequest(given().get("/v1/teams").then())

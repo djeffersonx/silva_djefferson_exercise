@@ -59,9 +59,9 @@ public class MembershipsApiTests {
 
     @Test
     void shouldCreateRoleMembership() {
-        Membership expectedMembership = membership(networkTeam(), developerRole());
+        Membership expectedMembership = membership(engineeringTeam(), developerRole());
         givenRoleExists(expectedMembership);
-        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), networkTeam());
+        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), engineeringTeam());
 
         MembershipResponse actualMembership = createMembership(expectedMembership)
                 .statusCode(HttpStatus.CREATED.value())
@@ -117,7 +117,7 @@ public class MembershipsApiTests {
     void shouldReturnMembershipWhenMembershipAlreadyExists() {
         Membership membership = givenMembershipExists(defaultMembership());
 
-        givenGetTeamByIdAnswer(mockServer, membership.getTeamId(), networkTeam());
+        givenGetTeamByIdAnswer(mockServer, membership.getTeamId(), engineeringTeam());
 
         MembershipResponse membershipResponse = createMembership(membership)
                 .statusCode(HttpStatus.OK.value())
@@ -132,7 +132,7 @@ public class MembershipsApiTests {
     void shouldFailToCreateRoleMembershipWhenRoleDoesNotExist() {
         Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(Role.builder().id(teamLeadId).build());
-        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), networkTeam());
+        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), engineeringTeam());
 
         createMembership(expectedMembership)
                 .validate(HttpStatus.NOT_FOUND.value(), format("Role %s not found", teamLeadId));
@@ -153,7 +153,7 @@ public class MembershipsApiTests {
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
         Membership expectedMembership = membershipWithUserWithoutTeam();
         givenRoleExists(expectedMembership);
-        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), networkTeam());
+        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), engineeringTeam());
 
         createMembership(expectedMembership)
                 .validate(HttpStatus.BAD_REQUEST.value(),
@@ -192,7 +192,7 @@ public class MembershipsApiTests {
     void shouldGetRoleByUserIdAndTeamId() {
         Membership expectedMembership = defaultMembership();
         givenRoleExists(expectedMembership);
-        givenGetTeamByIdAnswer(mockServer, defaultTeamId, networkTeam());
+        givenGetTeamByIdAnswer(mockServer, defaultTeamId, engineeringTeam());
 
         createMembership(expectedMembership).statusCode(HttpStatus.CREATED.value());
 

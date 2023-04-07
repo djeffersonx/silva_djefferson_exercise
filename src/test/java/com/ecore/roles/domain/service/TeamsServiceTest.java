@@ -31,7 +31,7 @@ class TeamsServiceTest {
 
         @Test
         void givenTeamExistsShouldReturnIt() {
-            Team networkTeam = networkTeam();
+            Team networkTeam = engineeringTeam();
             when(teamsClient.getTeam(networkTeam.getId())).thenReturn(Optional.of(networkTeam));
 
             Team requiredTeam = teamsService.getRequiredTeam(networkTeam.getId());
@@ -42,7 +42,7 @@ class TeamsServiceTest {
 
         @Test
         void givenTeamNotExistsThrowException() {
-            Team networkTeam = networkTeam();
+            Team networkTeam = engineeringTeam();
             when(teamsClient.getTeam(networkTeam.getId())).thenReturn(Optional.empty());
 
             assertThrows(ResourceNotFoundException.class, () -> teamsService.getRequiredTeam(networkTeam.getId()));
@@ -54,7 +54,7 @@ class TeamsServiceTest {
     class GetTeams {
         @Test
         void givenTeamsExistsShouldReturnThem() {
-            when(teamsClient.getTeams()).thenReturn(List.of(networkTeam(), engineeringTeam()));
+            when(teamsClient.getTeams()).thenReturn(List.of(engineeringTeam(), networkTeam()));
 
             List<Team> teams = teamsService.getTeams();
 
@@ -78,7 +78,7 @@ class TeamsServiceTest {
 
         @Test
         void givenTeamExistsShouldReturnIt() {
-            Team networkTeam = networkTeam();
+            Team networkTeam = engineeringTeam();
             when(teamsClient.getTeam(networkTeam.getId())).thenReturn(Optional.of(networkTeam));
 
             Team requiredTeam = teamsService.getRequiredTeam(networkTeam.getId());
