@@ -16,7 +16,6 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.ecore.roles.objectmother.RoleObjectMother.*;
 import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
@@ -48,8 +47,6 @@ public class RolesApiTest {
     void setUp() {
         mockServer = MockRestServiceServer.createServer(restTemplate);
         RestAssuredHelper.setUp(port);
-        Optional<Role> devOpsRole = roleRepository.findByName(devopsTeam().getName());
-        devOpsRole.ifPresent(roleRepository::delete);
     }
 
     @Test
