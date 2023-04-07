@@ -2,7 +2,6 @@ package com.ecore.roles.domain.service;
 
 import com.ecore.roles.domain.client.UsersClient;
 import com.ecore.roles.domain.client.resources.User;
-import com.ecore.roles.domain.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

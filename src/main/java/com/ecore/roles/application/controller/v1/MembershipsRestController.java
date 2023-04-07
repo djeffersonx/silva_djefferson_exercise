@@ -25,8 +25,7 @@ public class MembershipsRestController {
     public MembershipResponse create(
             @Valid @RequestBody CreateMembershipRequest request) {
         return MembershipResponse.fromModel(
-                membershipsService.create(request.toCommand())
-        );
+                membershipsService.create(request.toCommand()));
     }
 
     @GetMapping(path = "/roles/{roleId}")

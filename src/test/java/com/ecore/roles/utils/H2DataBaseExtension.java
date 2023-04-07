@@ -30,15 +30,16 @@ public class H2DataBaseExtension implements BeforeAllCallback, AfterEachCallback
 
     private void truncateAllTables() throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement foreignKeyCheck = setForeignKeyChecks(connection);
-             PreparedStatement tables = listTables(connection)) {
+                PreparedStatement foreignKeyCheck = setForeignKeyChecks(connection);
+                PreparedStatement tables = listTables(connection)) {
 
             try (ResultSet tablesRes = tables.executeQuery()) {
                 foreignKeyCheck.setBoolean(1, false);
                 foreignKeyCheck.executeUpdate();
                 while (tablesRes.next()) {
                     String table = tablesRes.getString(1);
-                    try (PreparedStatement truncateTable = connection.prepareStatement("TRUNCATE TABLE " + table + " RESTART IDENTITY")) {
+                    try (PreparedStatement truncateTable =
+                            connection.prepareStatement("TRUNCATE TABLE " + table + " RESTART IDENTITY")) {
                         truncateTable.executeUpdate();
                     }
                 }

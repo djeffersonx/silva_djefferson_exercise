@@ -42,9 +42,10 @@ public class MembershipsApiTests {
     private int port;
 
     @Autowired
-    public MembershipsApiTests(MembershipRepository membershipRepository,
-                               RoleRepository roleRepository,
-                               RestTemplate restTemplate) {
+    public MembershipsApiTests(
+            MembershipRepository membershipRepository,
+            RoleRepository roleRepository,
+            RestTemplate restTemplate) {
         this.membershipRepository = membershipRepository;
         this.roleRepository = roleRepository;
         this.restTemplate = restTemplate;
@@ -69,7 +70,6 @@ public class MembershipsApiTests {
         assertThat(actualMembership.getId()).isNotNull();
         assertThat(actualMembership).isEqualTo(MembershipResponse.fromModel(expectedMembership));
     }
-
 
     @Test
     void shouldFailToCreateRoleMembershipWhenBodyIsNull() {
@@ -140,7 +140,8 @@ public class MembershipsApiTests {
         givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), null);
 
         createMembership(expectedMembership)
-                .validate(HttpStatus.NOT_FOUND.value(), format("Team %s not found", expectedMembership.getTeamId()));
+                .validate(HttpStatus.NOT_FOUND.value(),
+                        format("Team %s not found", expectedMembership.getTeamId()));
     }
 
     @Test
@@ -213,8 +214,8 @@ public class MembershipsApiTests {
         createMembership(expectedMembership).statusCode(HttpStatus.CREATED.value());
 
         RestAssuredHelper.getMembershipRole(
-                        expectedMembership.getUserId(),
-                        expectedMembership.getTeamId())
+                expectedMembership.getUserId(),
+                expectedMembership.getTeamId())
                 .statusCode(HttpStatus.OK.value())
                 .body("name", equalTo(expectedMembership.getRole().getName()));
     }

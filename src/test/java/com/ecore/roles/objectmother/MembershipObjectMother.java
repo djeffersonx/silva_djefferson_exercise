@@ -30,7 +30,6 @@ public class MembershipObjectMother {
                 .build();
     }
 
-
     public static Membership membership(Team team, Role role) {
         return Membership.builder()
                 .id(membershipId)

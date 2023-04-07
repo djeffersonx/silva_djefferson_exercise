@@ -5,7 +5,6 @@ import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import com.ecore.roles.domain.service.RolesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

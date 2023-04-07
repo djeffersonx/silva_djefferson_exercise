@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class CreateMembershipCommandTest {
 
-
     @Test
     public void shouldNotProvideConstraintViolationWhenMembershipIsFullFilled() {
         Membership expectedMembership = defaultMembership();
         CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
 
-        Set<ConstraintViolation<CreateMembershipCommand>> violations = Validator.validate(createMembershipCommand);
+        Set<ConstraintViolation<CreateMembershipCommand>> violations =
+                Validator.validate(createMembershipCommand);
 
         assertEquals(0, violations.size());
     }
@@ -33,7 +33,8 @@ class CreateMembershipCommandTest {
         expectedMembership.setRole(null);
         CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
 
-        Set<ConstraintViolation<CreateMembershipCommand>> violations = Validator.validate(createMembershipCommand);
+        Set<ConstraintViolation<CreateMembershipCommand>> violations =
+                Validator.validate(createMembershipCommand);
 
         assertEquals(1, violations.size());
         assertEquals("Role identifier is required", violations.iterator().next().getMessage());
@@ -45,7 +46,8 @@ class CreateMembershipCommandTest {
         expectedMembership.setTeamId(null);
         CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
 
-        Set<ConstraintViolation<CreateMembershipCommand>> violations = Validator.validate(createMembershipCommand);
+        Set<ConstraintViolation<CreateMembershipCommand>> violations =
+                Validator.validate(createMembershipCommand);
 
         assertEquals(1, violations.size());
         assertEquals("Team identifier is required", violations.iterator().next().getMessage());
@@ -57,7 +59,8 @@ class CreateMembershipCommandTest {
         expectedMembership.setUserId(null);
         CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
 
-        Set<ConstraintViolation<CreateMembershipCommand>> violations = Validator.validate(createMembershipCommand);
+        Set<ConstraintViolation<CreateMembershipCommand>> violations =
+                Validator.validate(createMembershipCommand);
 
         assertEquals(1, violations.size());
         assertEquals("User identifier is required", violations.iterator().next().getMessage());

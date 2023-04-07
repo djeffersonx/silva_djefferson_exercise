@@ -98,7 +98,7 @@ class MembershipsServiceTest {
     private void givenFindMembershipAnswer(Membership membership, Optional<Membership> answer) {
         when(membershipRepository.findByUserIdAndTeamId(membership.getUserId(),
                 membership.getTeamId()))
-                .thenReturn(answer);
+                        .thenReturn(answer);
     }
 
     private void givenMembershipRepositorySaveWithSuccess(Membership membership) {

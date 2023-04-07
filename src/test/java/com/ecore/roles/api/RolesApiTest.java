@@ -54,7 +54,7 @@ public class RolesApiTest {
         sendRequest(when()
                 .get("/v1/role")
                 .then())
-                .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+                        .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
     }
 
     @Test
@@ -102,8 +102,10 @@ public class RolesApiTest {
         RoleResponse[] roles = getRoles().extract().as(RoleResponse[].class);
 
         assertThat(roles.length).isGreaterThanOrEqualTo(3);
-        assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole().getName()));
-        assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(productOwnerRole().getName()));
+        assertThat(roles)
+                .anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole().getName()));
+        assertThat(roles)
+                .anySatisfy((role) -> assertThat(role.getName()).isEqualTo(productOwnerRole().getName()));
         assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(testerRole().getName()));
     }
 
