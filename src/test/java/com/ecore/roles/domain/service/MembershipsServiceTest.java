@@ -4,8 +4,8 @@ import com.ecore.roles.domain.command.CreateMembershipCommand;
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.repository.MembershipRepository;
 import com.ecore.roles.domain.repository.RoleRepository;
+import com.ecore.roles.domain.service.resource.IdempotentOutput;
 import com.ecore.roles.exception.InvalidInputException;
-import com.ecore.roles.exception.ResourceAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,10 +44,13 @@ class MembershipsServiceTest {
         givenMembershipRepositorySaveWithSuccess(expectedMembership);
         givenUserBelongsToTheTeam(expectedMembership);
 
-        Membership actualMembership = membershipsService.create(createMembershipCommand);
+        IdempotentOutput<Membership> idempotent = membershipsService.create(createMembershipCommand);
+        Membership model = idempotent.getModel();
 
-        assertNotNull(actualMembership);
-        assertEquals(actualMembership, expectedMembership);
+        assertNotNull(model);
+        assertEquals(model, expectedMembership);
+        assertEquals(true, idempotent.isCreated());
+
         verify(roleRepository).findById(expectedMembership.getRole().getId());
     }
 
@@ -57,17 +60,19 @@ class MembershipsServiceTest {
     }
 
     @Test
-    public void shouldFailToCreateMembershipWhenItExists() {
+    public void shouldReturnPersistedMembershipWhenItExists() {
         Membership expectedMembership = membership(systemTeam(), developerRole());
         CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
         givenRoleExists(expectedMembership);
         givenFindMembershipAnswer(expectedMembership, Optional.of(expectedMembership));
         givenUserBelongsToTheTeam(expectedMembership);
 
-        ResourceAlreadyExistsException exception = assertThrows(ResourceAlreadyExistsException.class,
-                () -> membershipsService.create(createMembershipCommand));
+        IdempotentOutput<Membership> idempotent = membershipsService.create(createMembershipCommand);
+        Membership model = idempotent.getModel();
 
-        assertEquals("Membership already exists", exception.getMessage());
+        assertFalse(idempotent.isCreated());
+        assertEquals(expectedMembership.getId(), model.getId());
+        verify(membershipRepository, times(0)).save(any());
         verify(roleRepository, times(0)).getById(any());
         verify(usersService, times(0)).getUser(any());
         verify(teamsService, times(0)).getTeam(any());
@@ -98,7 +103,7 @@ class MembershipsServiceTest {
     private void givenFindMembershipAnswer(Membership membership, Optional<Membership> answer) {
         when(membershipRepository.findByUserIdAndTeamId(membership.getUserId(),
                 membership.getTeamId()))
-                        .thenReturn(answer);
+                .thenReturn(answer);
     }
 
     private void givenMembershipRepositorySaveWithSuccess(Membership membership) {

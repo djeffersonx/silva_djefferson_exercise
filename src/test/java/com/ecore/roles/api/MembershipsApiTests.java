@@ -114,13 +114,19 @@ public class MembershipsApiTests {
     }
 
     @Test
-    void shouldFailToCreateRoleMembershipWhenMembershipAlreadyExists() {
-        Membership membership = defaultMembership();
-        givenMembershipExists(membership);
+    void shouldReturnMembershipWhenMembershipAlreadyExists() {
+        Membership membership = givenMembershipExists(defaultMembership());
+
         givenGetTeamByIdAnswer(mockServer, membership.getTeamId(), systemTeam());
 
-        createMembership(membership)
-                .validate(HttpStatus.CONFLICT.value(), "Membership already exists");
+        MembershipResponse membershipResponse = createMembership(membership)
+                .statusCode(HttpStatus.OK.value())
+                .extract().as(MembershipResponse.class);
+
+
+        assertThat(membershipRepository.findAll().size()).isOne();
+        assertThat(membershipResponse.getId()).isEqualTo(membership.getId());
+
     }
 
     @Test
@@ -214,20 +220,19 @@ public class MembershipsApiTests {
         createMembership(expectedMembership).statusCode(HttpStatus.CREATED.value());
 
         RestAssuredHelper.getMembershipRole(
-                expectedMembership.getUserId(),
-                expectedMembership.getTeamId())
+                        expectedMembership.getUserId(),
+                        expectedMembership.getTeamId())
                 .statusCode(HttpStatus.OK.value())
                 .body("name", equalTo(expectedMembership.getRole().getName()));
     }
 
     private void givenRoleExists(Membership expectedMembership) {
-        roleRepository.save(expectedMembership.getRole());
         expectedMembership.setRole(roleRepository.save(expectedMembership.getRole()));
     }
 
-    private void givenMembershipExists(Membership membership) {
+    private Membership givenMembershipExists(Membership membership) {
         givenRoleExists(membership);
-        membershipRepository.save(membership);
+        return membershipRepository.save(membership);
     }
 
 }

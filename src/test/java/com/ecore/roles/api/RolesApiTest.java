@@ -54,7 +54,7 @@ public class RolesApiTest {
         sendRequest(when()
                 .get("/v1/role")
                 .then())
-                        .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+                .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
     }
 
     @Test
@@ -66,6 +66,19 @@ public class RolesApiTest {
                 .extract().as(RoleResponse.class);
 
         assertThat(actualRole.getName()).isEqualTo(expectedRole.getName());
+    }
+
+    @Test
+    void shouldReturnPersistedRoleWhenAlreadyExists() {
+        Role developerRole = developerRole();
+        roleRepository.save(developerRole);
+
+        RoleResponse role = createRole(developerRole())
+                .statusCode(HttpStatus.OK.value())
+                .extract().as(RoleResponse.class);
+
+        assertThat(roleRepository.findAll().size()).isOne();
+        assertThat(role.getName()).isEqualTo(developerRole.getName());
     }
 
     @Test
@@ -87,13 +100,6 @@ public class RolesApiTest {
                 .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
     }
 
-    @Test
-    void shouldFailToCreateNewRoleWhenNameAlreadyExists() {
-        roleRepository.save(developerRole());
-
-        createRole(developerRole())
-                .validate(HttpStatus.CONFLICT.value(), "Role already exists");
-    }
 
     @Test
     void shouldGetAllRoles() {
@@ -111,7 +117,7 @@ public class RolesApiTest {
 
     @Test
     void shouldGetRoleById() {
-        Role expectedRole = developerRole();
+        Role expectedRole = roleRepository.save(developerRole());
 
         getRole(expectedRole.getId())
                 .statusCode(HttpStatus.OK.value())

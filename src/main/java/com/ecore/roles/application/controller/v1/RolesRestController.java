@@ -1,10 +1,12 @@
 package com.ecore.roles.application.controller.v1;
 
+import com.ecore.roles.application.controller.IdempotentOutputResponseEntity;
 import com.ecore.roles.application.controller.v1.resources.income.CreateRoleRequest;
 import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import com.ecore.roles.domain.service.RolesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,10 +22,11 @@ public class RolesRestController {
     private final RolesService rolesService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public RoleResponse create(
+    public ResponseEntity<RoleResponse> create(
             @Valid @RequestBody CreateRoleRequest request) {
-        return RoleResponse.fromModel(rolesService.create(request.toCommand()));
+        return IdempotentOutputResponseEntity.get(
+                rolesService.create(request.toCommand()), RoleResponse::fromModel
+        );
     }
 
     @GetMapping

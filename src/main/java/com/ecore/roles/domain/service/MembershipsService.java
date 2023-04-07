@@ -1,8 +1,8 @@
 package com.ecore.roles.domain.service;
 
 import com.ecore.roles.domain.command.CreateMembershipCommand;
+import com.ecore.roles.domain.service.resource.IdempotentOutput;
 import com.ecore.roles.exception.InvalidInputException;
-import com.ecore.roles.exception.ResourceAlreadyExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.model.Role;
@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -37,7 +38,7 @@ public class MembershipsService {
         this.teamsService = teamsService;
     }
 
-    public Membership create(@NonNull @Valid CreateMembershipCommand createMembershipCommand) {
+    public IdempotentOutput<Membership> create(@NonNull @Valid CreateMembershipCommand createMembershipCommand) {
         validateRoleIdExists(createMembershipCommand);
 
         Membership membership = createMembershipCommand.toModel();
@@ -46,12 +47,14 @@ public class MembershipsService {
             throw new InvalidInputException.Membership.ProvidedUserNotBelongsToTeam();
         }
 
-        if (membershipRepository.findByUserIdAndTeamId(membership.getUserId(), membership.getTeamId())
-                .isPresent()) {
-            throw new ResourceAlreadyExistsException(Membership.class);
-        }
+        Optional<Membership> membershipByUserIdAndTeamId =
+                membershipRepository.findByUserIdAndTeamId(membership.getUserId(), membership.getTeamId());
 
-        return membershipRepository.save(membership);
+        return membershipByUserIdAndTeamId
+                .map((existentMembership) ->
+                        IdempotentOutput.alreadyExists(existentMembership)
+                ).orElseGet(() -> IdempotentOutput.created(membershipRepository.save(membership)));
+
     }
 
     private void validateRoleIdExists(CreateMembershipCommand createMembershipCommand) {

@@ -1,11 +1,15 @@
 package com.ecore.roles.application.controller.v1;
 
+import com.ecore.roles.application.controller.IdempotentOutputResponseEntity;
 import com.ecore.roles.application.controller.v1.resources.income.CreateMembershipRequest;
 import com.ecore.roles.application.controller.v1.resources.outcome.MembershipResponse;
 import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
+import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.service.MembershipsService;
+import com.ecore.roles.domain.service.resource.IdempotentOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,11 +25,9 @@ public class MembershipsRestController {
     private final MembershipsService membershipsService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public MembershipResponse create(
-            @Valid @RequestBody CreateMembershipRequest request) {
-        return MembershipResponse.fromModel(
-                membershipsService.create(request.toCommand()));
+    public ResponseEntity<MembershipResponse> create(@Valid @RequestBody CreateMembershipRequest request) {
+        IdempotentOutput<Membership> membership = membershipsService.create(request.toCommand());
+        return IdempotentOutputResponseEntity.get(membership, MembershipResponse::fromModel);
     }
 
     @GetMapping(path = "/roles/{roleId}")

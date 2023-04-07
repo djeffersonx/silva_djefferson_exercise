@@ -1,7 +1,7 @@
 package com.ecore.roles.domain.service;
 
 import com.ecore.roles.domain.command.CreateRoleCommand;
-import com.ecore.roles.exception.ResourceAlreadyExistsException;
+import com.ecore.roles.domain.service.resource.IdempotentOutput;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.domain.model.Role;
 import com.ecore.roles.domain.repository.RoleRepository;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -26,11 +27,15 @@ public class RolesService {
         this.roleRepository = roleRepository;
     }
 
-    public Role create(@NonNull CreateRoleCommand createRoleCommand) {
-        if (roleRepository.findByName(createRoleCommand.getName()).isPresent()) {
-            throw new ResourceAlreadyExistsException(Role.class);
-        }
-        return roleRepository.save(createRoleCommand.toModel());
+    public IdempotentOutput<Role> create(@NonNull CreateRoleCommand createRoleCommand) {
+        Optional<Role> roleByName = roleRepository.findByName(createRoleCommand.getName());
+
+        return roleByName.map((existentRole) ->
+                IdempotentOutput.alreadyExists(existentRole)
+        ).orElseGet(() ->
+                IdempotentOutput.created(roleRepository.save(createRoleCommand.toModel()))
+        );
+
     }
 
     public Role getRole(@NonNull UUID roleId) {

@@ -1,10 +1,12 @@
 package com.ecore.roles.domain.service;
 
 import com.ecore.roles.domain.command.CreateRoleCommand;
+import com.ecore.roles.domain.service.resource.IdempotentOutput;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.domain.model.Role;
 import com.ecore.roles.domain.repository.MembershipRepository;
 import com.ecore.roles.domain.repository.RoleRepository;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,11 +19,9 @@ import static com.ecore.roles.objectmother.RoleObjectMother.createRoleCommand;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
 import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RolesServiceTest {
@@ -38,40 +38,67 @@ class RolesServiceTest {
     @Mock
     private MembershipsService membershipsService;
 
-    @Test
-    public void shouldCreateRole() {
-        Role developerRole = developerRole();
-        when(roleRepository.save(any())).thenReturn(developerRole);
-        CreateRoleCommand createRoleCommand = createRoleCommand(developerRole);
+    @Nested
+    class CreateRole {
 
-        Role role = rolesService.create(createRoleCommand);
+        @Test
+        public void shouldCreateRole() {
+            Role developerRole = developerRole();
+            when(roleRepository.save(any())).thenReturn(developerRole);
+            CreateRoleCommand createRoleCommand = createRoleCommand(developerRole);
 
-        assertNotNull(role);
-        assertEquals(developerRole, role);
+            IdempotentOutput<Role> idempotent = rolesService.create(createRoleCommand);
+            Role model = idempotent.getModel();
+
+            assertTrue(idempotent.isCreated());
+            assertNotNull(model);
+            assertEquals(developerRole, model);
+        }
+
+        @Test
+        public void shouldReturnRoleWhenAlreadyExistsByName() {
+            Role developerRole = developerRole();
+            when(roleRepository.findByName(developerRole.getName())).thenReturn(Optional.of(developerRole));
+            CreateRoleCommand createRoleCommand = createRoleCommand(developerRole);
+
+            IdempotentOutput<Role> idempotent = rolesService.create(createRoleCommand);
+            Role model = idempotent.getModel();
+
+            assertNotNull(model);
+            assertFalse(idempotent.isCreated());
+            assertEquals(developerRole, model);
+            verify(roleRepository, times(0)).save(any());
+        }
+
+        @Test
+        public void shouldFailToCreateRoleWhenRoleIsNull() {
+            assertThrows(NullPointerException.class,
+                    () -> rolesService.create(null));
+        }
+
     }
 
-    @Test
-    public void shouldFailToCreateRoleWhenRoleIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> rolesService.create(null));
+    @Nested
+    class GetRole {
+
+        @Test
+        public void shouldReturnRoleWhenRoleIdExists() {
+            Role developerRole = developerRole();
+            when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
+
+            Role role = rolesService.getRole(developerRole.getId());
+
+            assertNotNull(role);
+            assertEquals(developerRole, role);
+        }
+
+        @Test
+        public void shouldFailToGetRoleWhenRoleIdDoesNotExist() {
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                    () -> rolesService.getRole(teamLeadId));
+
+            assertEquals(format("Role %s not found", teamLeadId), exception.getMessage());
+        }
     }
 
-    @Test
-    public void shouldReturnRoleWhenRoleIdExists() {
-        Role developerRole = developerRole();
-        when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
-
-        Role role = rolesService.getRole(developerRole.getId());
-
-        assertNotNull(role);
-        assertEquals(developerRole, role);
-    }
-
-    @Test
-    public void shouldFailToGetRoleWhenRoleIdDoesNotExist() {
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> rolesService.getRole(teamLeadId));
-
-        assertEquals(format("Role %s not found", teamLeadId), exception.getMessage());
-    }
 }

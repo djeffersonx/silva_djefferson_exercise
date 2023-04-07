@@ -37,9 +37,11 @@ public class DefaultExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(ResourceAlreadyExistsException exception) {
+    public ResponseEntity<Object> handle(ResourceAlreadyExistsException exception) {
         log.warn("Resource already exists: " + exception.getMessage(), exception);
-        return createResponse(HttpStatus.CONFLICT.value(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(exception.getResourceObject());
     }
 
     @ExceptionHandler
