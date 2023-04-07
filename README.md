@@ -5,6 +5,14 @@
 This project is a Java SpringBoot microservice that spins up a REST API, called Roles API, to improve upon the
 capabilities of the Users API and the Teams API.
 
+## API documentation
+
+This project is using [Spring Doc OpenAPI project](https://springdoc.org/) to auto generate the API documentation.
+
+The documentation will be available at `http://server:port/swagger-ui.html`
+
+If you are running locally the url will be: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
 # How to run
 
 ## Docker

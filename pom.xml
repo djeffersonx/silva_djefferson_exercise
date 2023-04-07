@@ -16,7 +16,7 @@
     <properties>
         <java.version>11</java.version>
         <springboot.version>2.6.6</springboot.version>
-        <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
         <rest-assured.version>4.5.1</rest-assured.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
     </properties>
@@ -56,6 +56,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.15</version>
         </dependency>
         <!--test-->
         <dependency>
