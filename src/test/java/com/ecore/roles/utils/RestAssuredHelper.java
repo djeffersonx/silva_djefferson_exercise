@@ -58,10 +58,10 @@ public class RestAssuredHelper {
 
     public static EcoreValidableResponse getMembershipRole(UUID userId, UUID teamId) {
         return sendRequest(given()
-                .pathParam("userId", userId)
-                .pathParam("teamId", teamId)
+                .queryParam("userId", userId)
+                .queryParam("teamId", teamId)
                 .when()
-                .get("/v1/roles/memberships/{userId}/{teamId}")
+                .get("/memberships/roles")
                 .then());
     }
 
@@ -69,15 +69,15 @@ public class RestAssuredHelper {
         return sendRequest(givenNullableBody(MembershipResponse.fromModel(membership))
                 .contentType(JSON)
                 .when()
-                .post("/v1/roles/memberships")
+                .post("/memberships")
                 .then());
     }
 
     public static EcoreValidableResponse getMemberships(UUID roleId) {
         return sendRequest(given()
-                .queryParam("roleId", roleId)
+                .pathParam("roleId", roleId)
                 .when()
-                .get("/v1/roles/memberships/search")
+                .get("/memberships/roles/{roleId}")
                 .then());
     }
 

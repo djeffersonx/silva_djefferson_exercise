@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/roles/memberships")
+@RequestMapping(value = "/memberships")
 public class MembershipsRestController {
 
     private final MembershipsService membershipsService;
@@ -32,9 +32,9 @@ public class MembershipsRestController {
                 .body(MembershipResponse.fromModel(membership));
     }
 
-    @GetMapping(path = "/search")
+    @GetMapping(path = "/roles/{roleId}")
     public ResponseEntity<List<MembershipResponse>> get(
-            @RequestParam UUID roleId) {
+            @PathVariable UUID roleId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(membershipsService.getMemberships(roleId)
@@ -43,8 +43,8 @@ public class MembershipsRestController {
                         ).collect(Collectors.toList()));
     }
 
-    @GetMapping(path = "/{userId}/{teamId}")
-    public ResponseEntity<RoleResponse> get(@PathVariable UUID userId, @PathVariable UUID teamId) {
+    @GetMapping(path = "/roles")
+    public ResponseEntity<RoleResponse> get(@RequestParam UUID userId, @RequestParam UUID teamId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(RoleResponse.fromModel(membershipsService.getMembership(userId, teamId).getRole()));

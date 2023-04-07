@@ -1,5 +1,6 @@
 package com.ecore.roles.application.controller.v1;
 
+import com.ecore.roles.application.controller.v1.resources.ApiVersion;
 import com.ecore.roles.application.controller.v1.resources.outcome.TeamResponse;
 import com.ecore.roles.domain.service.TeamsService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/teams")
+@RequestMapping(value = "/teams", headers = ApiVersion.V1)
 public class TeamsRestController {
 
     private final TeamsService teamsService;
