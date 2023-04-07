@@ -41,17 +41,18 @@ public class MembershipsService {
         UUID roleId = ofNullable(membership.getRole()).map(Role::getId)
                 .orElseThrow(() -> new InvalidArgumentException(Role.class));
 
+        roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));
+
         if (userNotBelongsToTeam(membership.getUserId(), membership.getTeamId())) {
             throw new InvalidInputException("Invalid 'Membership' object. " +
                     "The provided user doesn't belong to the provided team.");
         }
 
-        if (membershipRepository
-                .findByUserIdAndTeamId(membership.getUserId(), membership.getTeamId()).isPresent()) {
+        if (membershipRepository.findByUserIdAndTeamId(membership.getUserId(), membership.getTeamId()).isPresent()) {
             throw new ResourceAlreadyExistsException(Membership.class);
         }
 
-        roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));
+
         return membershipRepository.save(membership);
     }
 

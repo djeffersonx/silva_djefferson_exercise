@@ -21,26 +21,24 @@ public class RolesRestController {
     private final RolesService rolesService;
 
     @PostMapping
-    public ResponseEntity<RoleResponse> create(
+    @ResponseStatus(HttpStatus.CREATED)
+    public RoleResponse create(
             @Valid @RequestBody CreateRoleRequest input) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(RoleResponse.fromModel(rolesService.create(input.toModel())));
+        return RoleResponse.fromModel(rolesService.create(input.toModel()));
     }
 
     @GetMapping
-    public ResponseEntity<List<RoleResponse>> get() {
-        return ResponseEntity
-                .status(200)
-                .body(rolesService.getRoles().stream().map(RoleResponse::fromModel)
-                        .collect(Collectors.toList()));
+    @ResponseStatus(HttpStatus.OK)
+    public List<RoleResponse> get() {
+        return rolesService.getRoles()
+                .stream().map(RoleResponse::fromModel)
+                .collect(Collectors.toList());
     }
 
     @GetMapping(path = "/{roleId}")
-    public ResponseEntity<RoleResponse> get(@PathVariable UUID roleId) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(RoleResponse.fromModel(rolesService.getRole(roleId)));
+    @ResponseStatus(HttpStatus.OK)
+    public RoleResponse get(@PathVariable UUID roleId) {
+        return RoleResponse.fromModel(rolesService.getRole(roleId));
     }
 
 }

@@ -7,7 +7,6 @@ import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.service.MembershipsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,29 +22,25 @@ public class MembershipsRestController {
     private final MembershipsService membershipsService;
 
     @PostMapping
-    public ResponseEntity<MembershipResponse> create(
+    @ResponseStatus(HttpStatus.CREATED)
+    public MembershipResponse create(
             @Valid @RequestBody CreateMembershipRequest input) {
-        Membership membership = membershipsService.create(input.toModel());
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(MembershipResponse.fromModel(membership));
+        return MembershipResponse.fromModel(
+                membershipsService.create(input.toModel())
+        );
     }
 
     @GetMapping(path = "/roles/{roleId}")
-    public ResponseEntity<List<MembershipResponse>> get(@PathVariable UUID roleId) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(membershipsService.getMemberships(roleId)
-                        .stream().map(
-                                MembershipResponse::fromModel)
-                        .collect(Collectors.toList()));
+    @ResponseStatus(HttpStatus.OK)
+    public List<MembershipResponse> get(@PathVariable UUID roleId) {
+        return membershipsService.getMemberships(roleId)
+                .stream().map(MembershipResponse::fromModel).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/roles")
-    public ResponseEntity<RoleResponse> get(@RequestParam UUID userId, @RequestParam UUID teamId) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(RoleResponse.fromModel(membershipsService.getMembership(userId, teamId).getRole()));
+    @ResponseStatus(HttpStatus.OK)
+    public RoleResponse get(@RequestParam UUID userId, @RequestParam UUID teamId) {
+        return RoleResponse.fromModel(membershipsService.getMembership(userId, teamId).getRole());
     }
 
 }

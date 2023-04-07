@@ -4,11 +4,7 @@ import com.ecore.roles.application.controller.v1.resources.outcome.TeamResponse;
 import com.ecore.roles.domain.service.TeamsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -23,18 +19,17 @@ public class TeamsRestController {
     private final TeamsService teamsService;
 
     @GetMapping
-    public ResponseEntity<List<TeamResponse>> get() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(teamsService.getTeams().stream()
-                        .map(TeamResponse::fromModel)
-                        .collect(Collectors.toList()));
+    @ResponseStatus(HttpStatus.OK)
+    public List<TeamResponse> get() {
+        return teamsService.getTeams().stream()
+                .map(TeamResponse::fromModel)
+                .collect(Collectors.toList());
     }
 
     @GetMapping(path = "/{teamId}")
-    public ResponseEntity<TeamResponse> get(@PathVariable @NotNull UUID teamId) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(TeamResponse.fromModel(teamsService.getTeam(teamId)));
+    @ResponseStatus(HttpStatus.OK)
+    public TeamResponse get(@PathVariable @NotNull UUID teamId) {
+        return TeamResponse.fromModel(teamsService.getTeam(teamId));
     }
 
 }
