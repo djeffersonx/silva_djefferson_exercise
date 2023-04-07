@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +32,7 @@ public class UsersRestController {
 
     @GetMapping(path = "/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse get(@PathVariable UUID userId) {
+    public UserResponse get(@PathVariable @NotEmpty UUID userId) {
         return UserResponse.fromModel(usersService.getUser(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(User.class, userId)));
     }

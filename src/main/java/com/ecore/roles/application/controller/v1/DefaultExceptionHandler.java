@@ -11,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @ControllerAdvice
@@ -49,6 +50,14 @@ public class DefaultExceptionHandler {
         log.warn("Invalid input error: " + exception.getMessage(), exception);
         return createResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
+
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handle(MethodArgumentTypeMismatchException exception) {
+        log.warn("Type mismatch: " + exception.getMessage(), exception);
+        return createResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+    }
+
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(IllegalStateException exception) {
