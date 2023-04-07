@@ -23,8 +23,8 @@ public class RolesRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RoleResponse create(
-            @Valid @RequestBody CreateRoleRequest input) {
-        return RoleResponse.fromModel(rolesService.create(input.toModel()));
+            @Valid @RequestBody CreateRoleRequest request) {
+        return RoleResponse.fromModel(rolesService.create(request.toModel()));
     }
 
     @GetMapping

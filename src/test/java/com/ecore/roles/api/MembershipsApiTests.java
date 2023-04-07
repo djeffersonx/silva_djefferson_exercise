@@ -17,12 +17,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import static com.ecore.roles.objectmother.MembershipObjectMother.invalidMembership;
-import static com.ecore.roles.objectmother.MembershipObjectMother.membership;
+import static com.ecore.roles.objectmother.MembershipObjectMother.*;
+import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRoleId;
 import static com.ecore.roles.objectmother.TeamObjectMother.*;
-import static com.ecore.roles.objectmother.UserObjectMother.userIdThree;
-import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
+import static com.ecore.roles.objectmother.UserObjectMother.jamesUserId;
+import static com.ecore.roles.utils.MockUtils.givenGetTeamByIdAnswer;
 import static com.ecore.roles.utils.RestAssuredHelper.*;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,10 +58,9 @@ public class MembershipsApiTests {
 
     @Test
     void shouldCreateRoleMembership() {
-        Membership expectedMembership = membership();
-        roleRepository.save(expectedMembership.getRole());
-        expectedMembership.setRole(roleRepository.save(expectedMembership.getRole()));
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
+        Membership expectedMembership = membership(systemTeam(), developerRole());
+        givenRoleExists(expectedMembership);
+        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         MembershipResponse actualMembership = createMembership(expectedMembership)
                 .statusCode(HttpStatus.CREATED.value())
@@ -71,6 +70,7 @@ public class MembershipsApiTests {
         assertThat(actualMembership).isEqualTo(MembershipResponse.fromModel(expectedMembership));
     }
 
+
     @Test
     void shouldFailToCreateRoleMembershipWhenBodyIsNull() {
         createMembership(null)
@@ -79,7 +79,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleIsNull() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(null);
 
         createMembership(expectedMembership)
@@ -88,7 +88,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleIdIsNull() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(Role.builder().build());
 
         createMembership(expectedMembership)
@@ -97,7 +97,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenUserIdIsNull() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setUserId(null);
 
         createMembership(expectedMembership)
@@ -106,7 +106,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamIdISNull() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setTeamId(null);
 
         createMembership(expectedMembership)
@@ -115,10 +115,9 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenMembershipAlreadyExists() {
-        Membership membership = membership();
-        membership.setRole(roleRepository.save(membership.getRole()));
-        membershipRepository.save(membership);
-        mockGetTeamById(mockServer, membership.getTeamId(), systemTeam());
+        Membership membership = defaultMembership();
+        givenMembershipExists(membership);
+        givenGetTeamByIdAnswer(mockServer, membership.getTeamId(), systemTeam());
 
         createMembership(membership)
                 .validate(HttpStatus.CONFLICT.value(), "Membership already exists");
@@ -126,30 +125,29 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleDoesNotExist() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(Role.builder().id(teamLeadId).build());
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
+        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         createMembership(expectedMembership)
-                .validate(404, format("Role %s not found", teamLeadId));
+                .validate(HttpStatus.NOT_FOUND.value(), format("Role %s not found", teamLeadId));
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamDoesNotExist() {
-        Membership expectedMembership = membership();
-        expectedMembership.setRole(roleRepository.save(expectedMembership.getRole()));
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), null);
+        Membership expectedMembership = defaultMembership();
+        givenRoleExists(expectedMembership);
+        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), null);
 
         createMembership(expectedMembership)
-                .validate(404, format("Team %s not found", expectedMembership.getTeamId()));
+                .validate(HttpStatus.NOT_FOUND.value(), format("Team %s not found", expectedMembership.getTeamId()));
     }
 
     @Test
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
-        Membership expectedMembership = invalidMembership();
-        expectedMembership.setRole(roleRepository.save(expectedMembership.getRole()));
-
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
+        Membership expectedMembership = membershipWithUserWithoutTeam();
+        givenRoleExists(expectedMembership);
+        givenGetTeamByIdAnswer(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         createMembership(expectedMembership)
                 .validate(HttpStatus.BAD_REQUEST.value(),
@@ -158,9 +156,8 @@ public class MembershipsApiTests {
 
     @Test
     void shouldGetAllMemberships() {
-        Membership expectedMembership = membership();
-        expectedMembership.setRole(roleRepository.save(expectedMembership.getRole()));
-        membershipRepository.save(expectedMembership);
+        Membership expectedMembership = defaultMembership();
+        givenMembershipExists(expectedMembership);
 
         MembershipResponse[] actualMemberships = getMemberships(expectedMembership.getRole().getId())
                 .statusCode(200)
@@ -174,7 +171,7 @@ public class MembershipsApiTests {
     @Test
     void shouldGetAllMembershipsButReturnsEmptyList() {
         MembershipResponse[] actualMemberships = getMemberships(developerRoleId)
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .extract().as(MembershipResponse[].class);
 
         assertThat(actualMemberships.length).isEqualTo(0);
@@ -200,21 +197,36 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToGetRoleByUserIdAndTeamIdWhenItDoesNotExist() {
-        mockGetTeamById(mockServer, teamLeadId, null);
-        getMembershipRole(userIdThree, teamLeadId)
-                .validate(404, format("Membership %s %s not found", userIdThree, teamLeadId));
+        givenGetTeamByIdAnswer(mockServer, teamLeadId, null);
+
+        getMembershipRole(jamesUserId, teamLeadId)
+                .validate(HttpStatus.NOT_FOUND.value(),
+                        format("Membership %s %s not found", jamesUserId, teamLeadId));
     }
 
     @Test
     void shouldGetRoleByUserIdAndTeamId() {
-        Membership expectedMembership = membership();
-        mockGetTeamById(mockServer, defaultTeamId, systemTeam());
-        createMembership(expectedMembership)
-                .statusCode(HttpStatus.CREATED.value());
+        Membership expectedMembership = defaultMembership();
+        givenRoleExists(expectedMembership);
+        givenGetTeamByIdAnswer(mockServer, defaultTeamId, systemTeam());
 
-        RestAssuredHelper.getMembershipRole(expectedMembership.getUserId(), expectedMembership.getTeamId())
+        createMembership(expectedMembership).statusCode(HttpStatus.CREATED.value());
+
+        RestAssuredHelper.getMembershipRole(
+                        expectedMembership.getUserId(),
+                        expectedMembership.getTeamId())
                 .statusCode(HttpStatus.OK.value())
                 .body("name", equalTo(expectedMembership.getRole().getName()));
+    }
+
+    private void givenRoleExists(Membership expectedMembership) {
+        roleRepository.save(expectedMembership.getRole());
+        expectedMembership.setRole(roleRepository.save(expectedMembership.getRole()));
+    }
+
+    private void givenMembershipExists(Membership membership) {
+        givenRoleExists(membership);
+        membershipRepository.save(membership);
     }
 
 }

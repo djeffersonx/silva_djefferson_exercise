@@ -18,7 +18,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 public class MockUtils {
 
-    public static void mockGetUserById(MockRestServiceServer mockServer, UUID userId, User user) {
+    public static void givenGetUserByIdAnswer(MockRestServiceServer mockServer, UUID userId, User user) {
         try {
             mockServer.expect(requestTo("http://test.com/users/" + userId))
                     .andExpect(method(HttpMethod.GET))
@@ -31,7 +31,7 @@ public class MockUtils {
         }
     }
 
-    public static void mockGetTeamById(MockRestServiceServer mockServer, UUID teamId, Team team) {
+    public static void givenGetTeamByIdAnswer(MockRestServiceServer mockServer, UUID teamId, Team team) {
         try {
             mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://test.com/teams/" + teamId))
                     .andExpect(method(HttpMethod.GET))

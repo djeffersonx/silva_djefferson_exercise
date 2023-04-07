@@ -16,8 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.ecore.roles.objectmother.MembershipObjectMother.defaultMembership;
 import static com.ecore.roles.objectmother.MembershipObjectMother.membership;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
+import static com.ecore.roles.objectmother.TeamObjectMother.systemTeam;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,7 +44,7 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldCreateMembership() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
 
         givenRoleExists(expectedMembership);
         givenMembershipDoesntExistsYet(expectedMembership, Optional.empty());
@@ -64,7 +66,7 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldFailToCreateMembershipWhenItExists() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
         givenMembershipDoesntExistsYet(expectedMembership, Optional.of(expectedMembership));
         givenUserBelongsToTheTeam(expectedMembership);
 
@@ -79,7 +81,7 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldFailToCreateMembershipWhenItHasInvalidRole() {
-        Membership expectedMembership = membership();
+        Membership expectedMembership = defaultMembership();
         expectedMembership.setRole(null);
 
         InvalidArgumentException exception = assertThrows(InvalidArgumentException.class,

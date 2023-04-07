@@ -24,9 +24,9 @@ public class MembershipsRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MembershipResponse create(
-            @Valid @RequestBody CreateMembershipRequest input) {
+            @Valid @RequestBody CreateMembershipRequest request) {
         return MembershipResponse.fromModel(
-                membershipsService.create(input.toModel())
+                membershipsService.create(request.toModel())
         );
     }
 

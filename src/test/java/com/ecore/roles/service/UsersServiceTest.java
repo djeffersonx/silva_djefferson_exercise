@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.ecore.roles.objectmother.UserObjectMother.defaultUser;
+import static com.ecore.roles.objectmother.UserObjectMother.userFullFilledMary;
 import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -26,7 +26,7 @@ class UsersServiceTest {
 
     @Test
     void shouldGetUserWhenUserIdExists() {
-        User gianniUser = defaultUser();
+        User gianniUser = userFullFilledMary();
         when(usersClient.getUser(teamLeadId))
                 .thenReturn(Optional.of(gianniUser));
 
