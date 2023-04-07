@@ -1,7 +1,6 @@
 package com.ecore.roles.api;
 
 import com.ecore.roles.application.controller.v1.resources.outcome.TeamResponse;
-import com.ecore.roles.application.controller.v1.resources.outcome.UserResponse;
 import com.ecore.roles.domain.client.resources.Team;
 import com.ecore.roles.domain.repository.RoleRepository;
 import com.ecore.roles.objectmother.TeamObjectMother;
@@ -9,6 +8,7 @@ import com.ecore.roles.utils.H2DataBaseExtension;
 import com.ecore.roles.utils.MockUtils;
 import com.ecore.roles.utils.RestAssuredHelper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,57 +48,73 @@ public class TeamsApiTest {
         RestAssuredHelper.setUp(port);
     }
 
-    @Test
-    void shouldReturnExistentTeamById() {
-        Team team = TeamObjectMother.networkTeam();
-        MockUtils.givenGetTeamByIdAnswer(mockServer, team.getId(), team);
-        TeamResponse teamResponse = sendRequest(
-                given()
-                        .pathParam("teamId", team.getId())
-                        .get("/v1/teams/{teamId}")
-                        .then())
-                .statusCode(HttpStatus.OK.value()).extract().as(TeamResponse.class);
+    @Nested
+    class GetTeamById {
+        @Test
+        void givenTeamExistShouldReturnIt() {
+            Team team = TeamObjectMother.networkTeam();
+            MockUtils.givenGetTeamByIdAnswer(mockServer, team.getId(), team);
+            TeamResponse teamResponse = sendRequest(
+                    given()
+                            .pathParam("teamId", team.getId())
+                            .get("/v1/teams/{teamId}")
+                            .then())
+                    .statusCode(HttpStatus.OK.value()).extract().as(TeamResponse.class);
 
-        assertThat(teamResponse).isEqualTo(TeamResponse.fromModel(team));
+            assertThat(teamResponse).isEqualTo(TeamResponse.fromModel(team));
+        }
+
+        @Test
+        void givenTeamNotExistsShouldReturnNotFound() {
+            Team team = TeamObjectMother.networkTeam();
+            MockUtils.givenGetTeamByIdAnswer(mockServer, team.getId(), null);
+
+            sendRequest(
+                    given()
+                            .pathParam("teamId", team.getId())
+                            .get("/v1/teams/{teamId}")
+                            .then())
+                    .statusCode(HttpStatus.NOT_FOUND.value());
+
+        }
+
+        @Test
+        void givenInvalidUUIDShouldReturnBadRequest() {
+            sendRequest(
+                    given()
+                            .get("/v1/teams/INVALID_UUID")
+                            .then())
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
     }
 
-    @Test
-    void shouldReturnNotFoundToInexistentTeamId() {
-        Team team = TeamObjectMother.networkTeam();
-        MockUtils.givenGetTeamByIdAnswer(mockServer, team.getId(), null);
+    @Nested
+    class GetTeams {
 
-        sendRequest(
-                given()
-                        .pathParam("teamId", team.getId())
-                        .get("/v1/teams/{teamId}")
-                        .then())
-                .statusCode(HttpStatus.NOT_FOUND.value());
+        @Test
+        void givenExistsTeamsListShouldReturnIt() {
+            MockUtils.givenGetTeamsAnswer(mockServer, List.of(
+                    TeamObjectMother.networkTeam(), TeamObjectMother.engineeringTeam())
+            );
 
-    }
+            List<TeamResponse> users = Arrays.asList(sendRequest(given().get("/v1/teams").then())
+                    .statusCode(HttpStatus.OK.value()).extract().as(TeamResponse[].class));
 
-    @Test
-    void shouldReturnTeamsList() {
-        MockUtils.givenGetTeamsAnswer(mockServer, List.of(
-                TeamObjectMother.networkTeam(), TeamObjectMother.engineeringTeam())
-        );
+            assertThat(users.size()).isEqualTo(2);
 
-        List<TeamResponse> users = Arrays.asList(sendRequest(given().get("/v1/teams").then())
-                .statusCode(HttpStatus.OK.value()).extract().as(TeamResponse[].class));
+        }
 
-        assertThat(users.size()).isEqualTo(2);
+        @Test
+        void givenNotExistsTeamsShouldReturnNoContent() {
+            MockUtils.givenGetTeamsAnswer(mockServer, Collections.emptyList());
 
-    }
+            sendRequest(
+                    given()
+                            .get("/v1/teams")
+                            .then())
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-    @Test
-    void shouldReturnNoContentWhenTeamsListIsEmpty() {
-        MockUtils.givenGetTeamsAnswer(mockServer, Collections.emptyList());
-
-        sendRequest(
-                given()
-                        .get("/v1/teams")
-                        .then())
-                .statusCode(HttpStatus.NO_CONTENT.value());
+        }
 
     }
-
 }
