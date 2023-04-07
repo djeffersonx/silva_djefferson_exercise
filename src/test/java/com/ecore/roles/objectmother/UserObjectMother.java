@@ -16,11 +16,19 @@ public class UserObjectMother {
                 .id(maryUserId)
                 .displayName("mario").build();
         if (full) {
-            user.setFirstName("Mario");
-            user.setLastName("Silva");
+            user.setFirstName("Mary");
+            user.setLastName("anne");
             user.setAvatarUrl("https://cdn.fakercloud.com/avatars/rude_128.jpg");
-            user.setLocation("Brazil");
+            user.setLocation("EUA");
         }
+        return user;
+    }
+
+    public static User userJohn() {
+        User user = User.builder()
+                .id(johnUserId)
+                .displayName("john").build();
+
         return user;
     }
 

@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -17,6 +18,19 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 public class MockUtils {
+
+    public static void givenGetUsers(MockRestServiceServer mockServer, List<User> users) {
+        try {
+            mockServer.expect(requestTo("http://test.com/users"))
+                    .andExpect(method(HttpMethod.GET))
+                    .andRespond(
+                            withStatus(HttpStatus.OK)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .body(new ObjectMapper().writeValueAsString(users)));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void givenGetUserByIdAnswer(MockRestServiceServer mockServer, UUID userId, User user) {
         try {
