@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class TeamsRestController {
     }
 
     @GetMapping(path = "/{teamId}")
-    public ResponseEntity<TeamResponse> get(@PathVariable UUID teamId) {
+    public ResponseEntity<TeamResponse> get(@PathVariable @NotNull UUID teamId) {
         return ResponseEntity.status(200).body(TeamResponse.fromModel(teamsService.getTeam(teamId)));
     }
 

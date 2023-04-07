@@ -60,7 +60,7 @@ class RolesServiceTest {
         Role developerRole = developerRole();
         when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
 
-        Role role = rolesService.getRoles(developerRole.getId());
+        Role role = rolesService.getRole(developerRole.getId());
 
         assertNotNull(role);
         assertEquals(developerRole, role);
@@ -69,7 +69,7 @@ class RolesServiceTest {
     @Test
     public void shouldFailToGetRoleWhenRoleIdDoesNotExist() {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> rolesService.getRoles(teamLeadId));
+                () -> rolesService.getRole(teamLeadId));
 
         assertEquals(format("Role %s not found", teamLeadId), exception.getMessage());
     }

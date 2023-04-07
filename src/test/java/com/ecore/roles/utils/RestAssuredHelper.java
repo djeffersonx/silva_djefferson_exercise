@@ -102,13 +102,11 @@ public class RestAssuredHelper {
         }
 
         public ValidatableResponse statusCode(int statusCode) {
-            return this.validatableResponse
-                    .statusCode(statusCode);
+            return this.validatableResponse.statusCode(statusCode);
         }
 
         public ExtractableResponse<Response> extract() {
-            return this.validatableResponse
-                    .extract();
+            return this.validatableResponse.extract();
         }
 
     }

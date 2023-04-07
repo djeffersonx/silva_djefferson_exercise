@@ -4,7 +4,7 @@ import com.ecore.roles.domain.service.MembershipsService;
 import com.ecore.roles.domain.service.TeamsService;
 import com.ecore.roles.domain.service.UsersService;
 import com.ecore.roles.exception.InvalidArgumentException;
-import com.ecore.roles.exception.ResourceExistsException;
+import com.ecore.roles.exception.ResourceAlreadyExistsException;
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.repository.MembershipRepository;
 import com.ecore.roles.domain.repository.RoleRepository;
@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.ecore.roles.objectmother.MembershipObjectMother.defaultMembership;
+import static com.ecore.roles.objectmother.MembershipObjectMother.membership;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +42,7 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldCreateMembership() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
 
         givenRoleExists(expectedMembership);
         givenMembershipDoesntExistsYet(expectedMembership, Optional.empty());
@@ -65,11 +65,11 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldFailToCreateMembershipWhenItExists() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         givenMembershipDoesntExistsYet(expectedMembership, Optional.of(expectedMembership));
         givenUserBelongsToTheTeam(expectedMembership);
 
-        ResourceExistsException exception = assertThrows(ResourceExistsException.class,
+        ResourceAlreadyExistsException exception = assertThrows(ResourceAlreadyExistsException.class,
                 () -> membershipsService.create(expectedMembership));
 
         assertEquals("Membership already exists", exception.getMessage());
@@ -80,7 +80,7 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldFailToCreateMembershipWhenItHasInvalidRole() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         expectedMembership.setRole(null);
 
         InvalidArgumentException exception = assertThrows(InvalidArgumentException.class,

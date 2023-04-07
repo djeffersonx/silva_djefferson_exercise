@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -58,7 +59,7 @@ public class RolesApiTest {
         sendRequest(when()
                 .get("/v1/role")
                 .then())
-                        .validate(404, "Not Found");
+                .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
     }
 
     @Test
@@ -66,7 +67,7 @@ public class RolesApiTest {
         Role expectedRole = devopsTeam();
 
         RoleResponse actualRole = createRole(expectedRole)
-                .statusCode(201)
+                .statusCode(HttpStatus.CREATED.value())
                 .extract().as(RoleResponse.class);
 
         assertThat(actualRole.getName()).isEqualTo(expectedRole.getName());
@@ -75,25 +76,26 @@ public class RolesApiTest {
     @Test
     void shouldFailToCreateNewRoleWhenNull() {
         createRole(null)
-                .validate(400, "Bad Request");
+                .validate(HttpStatus.BAD_REQUEST.value(),
+                        "The request input is required, please send a request body");
     }
 
     @Test
     void shouldFailToCreateNewRoleWhenMissingName() {
         createRole(Role.builder().build())
-                .validate(400, "Bad Request");
+                .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
     }
 
     @Test
     void shouldFailToCreateNewRoleWhenBlankName() {
         createRole(Role.builder().name("").build())
-                .validate(400, "Bad Request");
+                .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
     }
 
     @Test
     void shouldFailToCreateNewRoleWhenNameAlreadyExists() {
         createRole(developerRole())
-                .validate(400, "Role already exists");
+                .validate(HttpStatus.CONFLICT.value(), "Role already exists");
     }
 
     @Test
@@ -112,14 +114,14 @@ public class RolesApiTest {
         Role expectedRole = developerRole();
 
         getRole(expectedRole.getId())
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .body("name", equalTo(expectedRole.getName()));
     }
 
     @Test
     void shouldFailToGetRoleById() {
         getRole(teamLeadId)
-                .validate(404, format("Role %s not found", teamLeadId));
+                .validate(HttpStatus.NOT_FOUND.value(), format("Role %s not found", teamLeadId));
     }
 
 }

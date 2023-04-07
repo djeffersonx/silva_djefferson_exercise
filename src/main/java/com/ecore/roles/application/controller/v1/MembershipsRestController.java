@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,7 +24,7 @@ public class MembershipsRestController {
 
     @PostMapping
     public ResponseEntity<MembershipResponse> create(
-            @NotNull @Valid @RequestBody CreateMembershipRequest input) {
+            @Valid @RequestBody CreateMembershipRequest input) {
         Membership membership = membershipsService.create(input.toModel());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,8 +32,7 @@ public class MembershipsRestController {
     }
 
     @GetMapping(path = "/roles/{roleId}")
-    public ResponseEntity<List<MembershipResponse>> get(
-            @PathVariable UUID roleId) {
+    public ResponseEntity<List<MembershipResponse>> get(@PathVariable UUID roleId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(membershipsService.getMemberships(roleId)

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class UsersRestController {
     }
 
     @PostMapping(path = "/{userId}")
-    public ResponseEntity<UserResponse> get(@PathVariable UUID userId) {
+    public ResponseEntity<UserResponse> get(@PathVariable @NotNull UUID userId) {
         return ResponseEntity
                 .status(200)
                 .body(UserResponse.fromModel(usersService.getUser(userId).orElseThrow(() ->

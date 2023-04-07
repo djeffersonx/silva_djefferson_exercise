@@ -19,19 +19,19 @@ public class CreateMembershipRequest {
 
     @JsonProperty
     @Valid
-    @NotNull
+    @NotNull(message = "Role identifier is required")
     @EqualsAndHashCode.Include
     private UUID roleId;
 
     @JsonProperty(value = "teamMemberId")
     @Valid
-    @NotNull
+    @NotNull(message = "User identifier is required")
     @EqualsAndHashCode.Include
     private UUID userId;
 
     @JsonProperty
     @Valid
-    @NotNull
+    @NotNull(message = "Team identifier is required")
     @EqualsAndHashCode.Include
     private UUID teamId;
 

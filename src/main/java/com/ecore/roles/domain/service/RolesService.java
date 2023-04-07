@@ -1,9 +1,8 @@
 package com.ecore.roles.domain.service;
 
-import com.ecore.roles.exception.ResourceExistsException;
+import com.ecore.roles.exception.ResourceAlreadyExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.domain.model.Role;
-import com.ecore.roles.domain.repository.MembershipRepository;
 import com.ecore.roles.domain.repository.RoleRepository;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -17,40 +16,27 @@ import java.util.UUID;
 @Service
 public class RolesService {
 
-    public static final String DEFAULT_ROLE = "Developer";
-
     private final RoleRepository roleRepository;
-    private final MembershipRepository membershipRepository;
-    private final MembershipsService membershipsService;
 
     @Autowired
-    public RolesService(
-            RoleRepository roleRepository,
-            MembershipRepository membershipRepository,
-            MembershipsService membershipsService) {
+    public RolesService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
-        this.membershipRepository = membershipRepository;
-        this.membershipsService = membershipsService;
     }
 
-    public Role create(@NonNull Role r) {
-        if (roleRepository.findByName(r.getName()).isPresent()) {
-            throw new ResourceExistsException(Role.class);
+    public Role create(@NonNull Role role) {
+        if (roleRepository.findByName(role.getName()).isPresent()) {
+            throw new ResourceAlreadyExistsException(Role.class);
         }
-        return roleRepository.save(r);
+        return roleRepository.save(role);
     }
 
-    public Role getRoles(@NonNull UUID rid) {
-        return roleRepository.findById(rid)
-                .orElseThrow(() -> new ResourceNotFoundException(Role.class, rid));
+    public Role getRole(@NonNull UUID roleId) {
+        return roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));
     }
 
     public List<Role> getRoles() {
         return roleRepository.findAll();
     }
 
-    private Role getDefaultRole() {
-        return roleRepository.findByName(DEFAULT_ROLE)
-                .orElseThrow(() -> new IllegalStateException("Default role is not configured"));
-    }
 }

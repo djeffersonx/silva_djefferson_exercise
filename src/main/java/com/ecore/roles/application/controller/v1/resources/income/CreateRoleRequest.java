@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,14 +15,11 @@ import java.util.UUID;
 public class CreateRoleRequest {
 
     @JsonProperty
-    private UUID id;
-    @JsonProperty
-    @NotBlank
+    @NotBlank(message = "Role name is required")
     private String name;
 
     public Role toModel() {
         return Role.builder()
-                .id(this.id)
                 .name(this.name)
                 .build();
     }

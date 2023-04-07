@@ -36,11 +36,10 @@ public class RolesRestController {
     }
 
     @GetMapping(path = "/{roleId}")
-    public ResponseEntity<RoleResponse> get(
-            @PathVariable UUID roleId) {
+    public ResponseEntity<RoleResponse> get(@PathVariable UUID roleId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(RoleResponse.fromModel(rolesService.getRoles(roleId)));
+                .body(RoleResponse.fromModel(rolesService.getRole(roleId)));
     }
 
 }

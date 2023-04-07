@@ -1,8 +1,8 @@
 package com.ecore.roles.domain.service;
 
 import com.ecore.roles.exception.InvalidArgumentException;
-import com.ecore.roles.exception.InvalidRequest;
-import com.ecore.roles.exception.ResourceExistsException;
+import com.ecore.roles.exception.InvalidInputException;
+import com.ecore.roles.exception.ResourceAlreadyExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.model.Role;
@@ -42,13 +42,13 @@ public class MembershipsService {
                 .orElseThrow(() -> new InvalidArgumentException(Role.class));
 
         if (userNotBelongsToTeam(membership.getUserId(), membership.getTeamId())) {
-            throw new InvalidRequest("Invalid 'Membership' object. " +
+            throw new InvalidInputException("Invalid 'Membership' object. " +
                     "The provided user doesn't belong to the provided team.");
         }
 
         if (membershipRepository
                 .findByUserIdAndTeamId(membership.getUserId(), membership.getTeamId()).isPresent()) {
-            throw new ResourceExistsException(Membership.class);
+            throw new ResourceAlreadyExistsException(Membership.class);
         }
 
         roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));

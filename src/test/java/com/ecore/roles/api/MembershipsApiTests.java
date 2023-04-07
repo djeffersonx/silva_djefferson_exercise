@@ -23,7 +23,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import static com.ecore.roles.objectmother.MembershipObjectMother.defaultMembership;
+import static com.ecore.roles.objectmother.MembershipObjectMother.membership;
 import static com.ecore.roles.objectmother.MembershipObjectMother.invalidMembership;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRoleId;
 
@@ -53,7 +53,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldCreateRoleMembership() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
 
         MembershipResponse actualMembership = createDefaultMembership();
 
@@ -64,56 +64,56 @@ public class MembershipsApiTests {
     @Test
     void shouldFailToCreateRoleMembershipWhenBodyIsNull() {
         createMembership(null)
-                .validate(400, "Bad Request");
+                .validate(400, "The request input is required, please send a request body");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleIsNull() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         expectedMembership.setRole(null);
 
         createMembership(expectedMembership)
-                .validate(400, "Bad Request");
+                .validate(400, "Role identifier is required");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleIdIsNull() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         expectedMembership.setRole(Role.builder().build());
 
         createMembership(expectedMembership)
-                .validate(400, "Bad Request");
+                .validate(400, "Role identifier is required");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenUserIdIsNull() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         expectedMembership.setUserId(null);
 
         createMembership(expectedMembership)
-                .validate(400, "Bad Request");
+                .validate(400, "User identifier is required");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamIdISNull() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         expectedMembership.setTeamId(null);
 
         createMembership(expectedMembership)
-                .validate(400, "Bad Request");
+                .validate(400, "Team identifier is required");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenMembershipAlreadyExists() {
         createDefaultMembership();
 
-        createMembership(defaultMembership())
-                .validate(400, "Membership already exists");
+        createMembership(membership())
+                .validate(HttpStatus.CONFLICT.value(), "Membership already exists");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleDoesNotExist() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         expectedMembership.setRole(Role.builder().id(teamLeadId).build());
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
 
@@ -123,7 +123,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamDoesNotExist() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), null);
 
         createMembership(expectedMembership)
@@ -143,7 +143,7 @@ public class MembershipsApiTests {
     @Test
     void shouldGetAllMemberships() {
         createDefaultMembership();
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
 
         MembershipResponse[] actualMemberships = getMemberships(expectedMembership.getRole().getId())
                 .statusCode(200)
@@ -190,7 +190,7 @@ public class MembershipsApiTests {
 
     @Test
     void shouldGetRoleByUserIdAndTeamId() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         mockGetTeamById(mockServer, defaultTeamId, systemTeam());
         createMembership(expectedMembership)
                 .statusCode(HttpStatus.CREATED.value());
@@ -201,7 +201,7 @@ public class MembershipsApiTests {
     }
 
     private MembershipResponse createDefaultMembership() {
-        Membership expectedMembership = defaultMembership();
+        Membership expectedMembership = membership();
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), systemTeam());
 
         return createMembership(expectedMembership)
