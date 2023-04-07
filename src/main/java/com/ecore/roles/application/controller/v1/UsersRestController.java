@@ -1,8 +1,9 @@
-package com.ecore.roles.application.controller;
+package com.ecore.roles.application.controller.v1;
 
+import com.ecore.roles.application.controller.v1.resources.ApiVersion;
+import com.ecore.roles.application.controller.v1.resources.outcome.UserResponse;
 import com.ecore.roles.domain.client.resources.User;
 import com.ecore.roles.domain.service.UsersService;
-import com.ecore.roles.application.controller.resources.outcome.UserResponse;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.ecore.roles.application.controller.resources.outcome.UserResponse.fromModel;
-
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/users")
+@RequestMapping(value = "/users", headers = ApiVersion.V1)
 public class UsersRestController {
 
     private final UsersService usersService;
@@ -37,7 +36,7 @@ public class UsersRestController {
     public ResponseEntity<UserResponse> get(@PathVariable UUID userId) {
         return ResponseEntity
                 .status(200)
-                .body(fromModel(usersService.getUser(userId).orElseThrow(() ->
+                .body(UserResponse.fromModel(usersService.getUser(userId).orElseThrow(() ->
                         new ResourceNotFoundException(User.class, userId))));
     }
 }

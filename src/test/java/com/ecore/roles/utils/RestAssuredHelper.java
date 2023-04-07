@@ -1,16 +1,19 @@
 package com.ecore.roles.utils;
 
+import com.ecore.roles.application.controller.v1.resources.ApiVersion;
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.model.Role;
-import com.ecore.roles.application.controller.resources.outcome.MembershipResponse;
-import com.ecore.roles.application.controller.resources.outcome.RoleResponse;
+import com.ecore.roles.application.controller.v1.resources.outcome.MembershipResponse;
+import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import io.restassured.RestAssured;
+import io.restassured.http.Header;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.hamcrest.Matchers;
+import org.springframework.http.HttpHeaders;
 
 import java.util.UUID;
 
@@ -26,33 +29,34 @@ public class RestAssuredHelper {
         RestAssured.baseURI = "http://localhost:" + port;
     }
 
-    public static EcoreValidatableResponse sendRequest(ValidatableResponse validatableResponse) {
-        return new EcoreValidatableResponse(validatableResponse);
+    public static EcoreValidableResponse sendRequest(ValidatableResponse validatableResponse) {
+        return new EcoreValidableResponse(validatableResponse);
     }
 
-    public static EcoreValidatableResponse createRole(Role role) {
+    public static EcoreValidableResponse createRole(Role role) {
         return sendRequest(givenNullableBody(RoleResponse.fromModel(role))
-                .contentType(JSON)
                 .when()
-                .post("/v1/roles")
+                .contentType(ApiVersion.V1_VALUE)
+                .post("/roles")
                 .then());
     }
 
-    public static EcoreValidatableResponse getRoles() {
+    public static EcoreValidableResponse getRoles() {
         return sendRequest(when()
-                .get("/v1/roles")
+                .get("/roles")
                 .then());
     }
 
-    public static EcoreValidatableResponse getRole(UUID roleId) {
+    public static EcoreValidableResponse getRole(UUID roleId) {
         return sendRequest(given()
                 .pathParam("roleId", roleId)
+                .contentType(ApiVersion.V1_VALUE)
                 .when()
-                .get("/v1/roles/{roleId}")
+                .get("/roles/{roleId}")
                 .then());
     }
 
-    public static EcoreValidatableResponse getMembershipRole(UUID userId, UUID teamId) {
+    public static EcoreValidableResponse getMembershipRole(UUID userId, UUID teamId) {
         return sendRequest(given()
                 .pathParam("userId", userId)
                 .pathParam("teamId", teamId)
@@ -61,7 +65,7 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse createMembership(Membership membership) {
+    public static EcoreValidableResponse createMembership(Membership membership) {
         return sendRequest(givenNullableBody(MembershipResponse.fromModel(membership))
                 .contentType(JSON)
                 .when()
@@ -69,7 +73,7 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse getMemberships(UUID roleId) {
+    public static EcoreValidableResponse getMemberships(UUID roleId) {
         return sendRequest(given()
                 .queryParam("roleId", roleId)
                 .when()
@@ -85,11 +89,11 @@ public class RestAssuredHelper {
         return requestSpecification;
     }
 
-    public static class EcoreValidatableResponse {
+    public static class EcoreValidableResponse {
 
         ValidatableResponse validatableResponse;
 
-        public EcoreValidatableResponse(ValidatableResponse validatableResponse) {
+        public EcoreValidableResponse(ValidatableResponse validatableResponse) {
             this.validatableResponse = validatableResponse;
         }
 

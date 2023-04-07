@@ -1,4 +1,4 @@
-package com.ecore.roles.application.controller.resources.outcome;
+package com.ecore.roles.application.controller.v1.resources.outcome;
 
 import com.ecore.roles.domain.client.resources.Team;
 import com.fasterxml.jackson.annotation.JsonInclude;

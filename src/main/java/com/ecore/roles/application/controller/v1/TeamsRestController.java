@@ -1,7 +1,7 @@
-package com.ecore.roles.application.controller;
+package com.ecore.roles.application.controller.v1;
 
+import com.ecore.roles.application.controller.v1.resources.outcome.TeamResponse;
 import com.ecore.roles.domain.service.TeamsService;
-import com.ecore.roles.application.controller.resources.outcome.TeamResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.ecore.roles.application.controller.resources.outcome.TeamResponse.fromModel;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,7 +28,7 @@ public class TeamsRestController {
 
     @GetMapping(path = "/{teamId}")
     public ResponseEntity<TeamResponse> get(@PathVariable UUID teamId) {
-        return ResponseEntity.status(200).body(fromModel(teamsService.getTeam(teamId)));
+        return ResponseEntity.status(200).body(TeamResponse.fromModel(teamsService.getTeam(teamId)));
     }
 
 }

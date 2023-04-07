@@ -1,4 +1,4 @@
-package com.ecore.roles.application.controller;
+package com.ecore.roles.application.controller.v1;
 
 import com.ecore.roles.exception.ErrorResponse;
 import com.ecore.roles.exception.InvalidRequest;

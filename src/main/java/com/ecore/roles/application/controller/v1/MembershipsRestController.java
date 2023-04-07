@@ -1,10 +1,10 @@
-package com.ecore.roles.application.controller;
+package com.ecore.roles.application.controller.v1;
 
-import com.ecore.roles.application.controller.resources.income.CreateMembershipRequest;
+import com.ecore.roles.application.controller.v1.resources.income.CreateMembershipRequest;
+import com.ecore.roles.application.controller.v1.resources.outcome.MembershipResponse;
+import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.service.MembershipsService;
-import com.ecore.roles.application.controller.resources.outcome.MembershipResponse;
-import com.ecore.roles.application.controller.resources.outcome.RoleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

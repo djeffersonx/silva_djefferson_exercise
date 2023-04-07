@@ -1,4 +1,4 @@
-package com.ecore.roles.application.controller.resources.income;
+package com.ecore.roles.application.controller.v1.resources.income;
 
 import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.model.Role;

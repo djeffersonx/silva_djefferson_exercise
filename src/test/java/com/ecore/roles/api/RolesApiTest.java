@@ -3,7 +3,7 @@ package com.ecore.roles.api;
 import com.ecore.roles.domain.model.Role;
 import com.ecore.roles.domain.repository.RoleRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
-import com.ecore.roles.application.controller.resources.outcome.RoleResponse;
+import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

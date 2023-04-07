@@ -4,7 +4,7 @@ import com.ecore.roles.domain.model.Membership;
 import com.ecore.roles.domain.model.Role;
 import com.ecore.roles.domain.repository.MembershipRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
-import com.ecore.roles.application.controller.resources.outcome.MembershipResponse;
+import com.ecore.roles.application.controller.v1.resources.outcome.MembershipResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
