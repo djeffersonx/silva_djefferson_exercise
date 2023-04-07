@@ -1,6 +1,6 @@
 package com.ecore.roles.application.controller.v1;
 
-import com.ecore.roles.application.controller.IdempotentOutputResponseEntity;
+import com.ecore.roles.application.controller.resource.IdempotentOutputResponseEntity;
 import com.ecore.roles.application.controller.v1.resources.income.CreateRoleRequest;
 import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import com.ecore.roles.domain.service.RolesService;

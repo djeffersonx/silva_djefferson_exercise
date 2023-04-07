@@ -1,4 +1,4 @@
-package com.ecore.roles.application.controller;
+package com.ecore.roles.application.controller.resource;
 
 import com.ecore.roles.domain.service.resource.IdempotentOutput;
 import org.springframework.http.HttpStatus;
