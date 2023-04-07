@@ -30,11 +30,8 @@ public class RolesService {
     public IdempotentOutput<Role> create(@NonNull CreateRoleCommand createRoleCommand) {
         Optional<Role> roleByName = roleRepository.findByName(createRoleCommand.getName());
 
-        return roleByName.map((existentRole) ->
-                IdempotentOutput.alreadyExists(existentRole)
-        ).orElseGet(() ->
-                IdempotentOutput.created(roleRepository.save(createRoleCommand.toModel()))
-        );
+        return roleByName.map((existentRole) -> IdempotentOutput.alreadyExists(existentRole))
+                .orElseGet(() -> IdempotentOutput.created(roleRepository.save(createRoleCommand.toModel())));
 
     }
 

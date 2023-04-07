@@ -54,7 +54,7 @@ public class RolesApiTest {
         sendRequest(when()
                 .get("/v1/role")
                 .then())
-                .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+                        .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
     }
 
     @Test
@@ -100,7 +100,6 @@ public class RolesApiTest {
                 .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
     }
 
-
     @Test
     void shouldGetAllRoles() {
         List.of(developerRole(), productOwnerRole(), testerRole()).forEach(roleRepository::save);
@@ -113,6 +112,11 @@ public class RolesApiTest {
         assertThat(roles)
                 .anySatisfy((role) -> assertThat(role.getName()).isEqualTo(productOwnerRole().getName()));
         assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(testerRole().getName()));
+    }
+
+    @Test
+    void shouldReturnNoContentWhenNotExistsAnyRole() {
+        getRoles().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test

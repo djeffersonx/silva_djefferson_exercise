@@ -38,7 +38,8 @@ public class MembershipsService {
         this.teamsService = teamsService;
     }
 
-    public IdempotentOutput<Membership> create(@NonNull @Valid CreateMembershipCommand createMembershipCommand) {
+    public IdempotentOutput<Membership> create(
+            @NonNull @Valid CreateMembershipCommand createMembershipCommand) {
         validateRoleIdExists(createMembershipCommand);
 
         Membership membership = createMembershipCommand.toModel();
@@ -51,9 +52,8 @@ public class MembershipsService {
                 membershipRepository.findByUserIdAndTeamId(membership.getUserId(), membership.getTeamId());
 
         return membershipByUserIdAndTeamId
-                .map((existentMembership) ->
-                        IdempotentOutput.alreadyExists(existentMembership)
-                ).orElseGet(() -> IdempotentOutput.created(membershipRepository.save(membership)));
+                .map((existentMembership) -> IdempotentOutput.alreadyExists(existentMembership))
+                .orElseGet(() -> IdempotentOutput.created(membershipRepository.save(membership)));
 
     }
 

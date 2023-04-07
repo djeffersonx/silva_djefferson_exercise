@@ -123,7 +123,6 @@ public class MembershipsApiTests {
                 .statusCode(HttpStatus.OK.value())
                 .extract().as(MembershipResponse.class);
 
-
         assertThat(membershipRepository.findAll().size()).isOne();
         assertThat(membershipResponse.getId()).isEqualTo(membership.getId());
 
@@ -176,12 +175,8 @@ public class MembershipsApiTests {
     }
 
     @Test
-    void shouldGetAllMembershipsButReturnsEmptyList() {
-        MembershipResponse[] actualMemberships = getMemberships(developerRoleId)
-                .statusCode(HttpStatus.OK.value())
-                .extract().as(MembershipResponse[].class);
-
-        assertThat(actualMemberships.length).isEqualTo(0);
+    void shouldGetAllMembershipsReturnNoContentWhenEmptyList() {
+        getMemberships(developerRoleId).statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     // @Test

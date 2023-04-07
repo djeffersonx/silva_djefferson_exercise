@@ -36,5 +36,4 @@ class CreateRoleCommandTest {
         assertEquals("Role name is required", violations.iterator().next().getMessage());
     }
 
-
 }
