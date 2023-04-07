@@ -22,9 +22,7 @@ public class RolesRestController {
 
     private final RolesService rolesService;
 
-    @PostMapping(
-            consumes = {"application/json"},
-            produces = {"application/json"})
+    @PostMapping
     public ResponseEntity<RoleResponse> create(
             @Valid @RequestBody CreateRoleRequest input) {
         return ResponseEntity
@@ -32,17 +30,14 @@ public class RolesRestController {
                 .body(fromModel(rolesService.create(input.toModel())));
     }
 
-    @GetMapping(
-            produces = {"application/json"})
+    @GetMapping
     public ResponseEntity<List<RoleResponse>> get() {
         return ResponseEntity
                 .status(200)
                 .body(rolesService.getRoles().stream().map(RoleResponse::fromModel).collect(Collectors.toList()));
     }
 
-    @GetMapping(
-            path = "/{roleId}",
-            produces = {"application/json"})
+    @GetMapping(path = "/{roleId}")
     public ResponseEntity<RoleResponse> get(
             @PathVariable UUID roleId) {
         return ResponseEntity

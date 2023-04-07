@@ -19,7 +19,7 @@ public class TeamsRestController {
 
     private final TeamsService teamsService;
 
-    @GetMapping(produces = {"application/json"})
+    @GetMapping
     public ResponseEntity<List<TeamResponse>> get() {
         return ResponseEntity
                 .status(200)
@@ -28,7 +28,7 @@ public class TeamsRestController {
                         .collect(Collectors.toList()));
     }
 
-    @GetMapping(path = "/{teamId}", produces = {"application/json"})
+    @GetMapping(path = "/{teamId}")
     public ResponseEntity<TeamResponse> get(@PathVariable UUID teamId) {
         return ResponseEntity.status(200).body(fromModel(teamsService.getTeam(teamId)));
     }

@@ -23,9 +23,7 @@ public class MembershipsRestController {
 
     private final MembershipsService membershipsService;
 
-    @PostMapping(
-            consumes = {"application/json"},
-            produces = {"application/json"})
+    @PostMapping
     public ResponseEntity<MembershipResponse> create(
             @NotNull @Valid @RequestBody CreateMembershipRequest input) {
         Membership membership = membershipsService.create(input.toModel());
@@ -34,9 +32,7 @@ public class MembershipsRestController {
                 .body(MembershipResponse.fromModel(membership));
     }
 
-    @GetMapping(
-            path = "/search",
-            produces = {"application/json"})
+    @GetMapping(path = "/search")
     public ResponseEntity<List<MembershipResponse>> get(
             @RequestParam UUID roleId) {
         return ResponseEntity
@@ -47,9 +43,7 @@ public class MembershipsRestController {
                         ).collect(Collectors.toList()));
     }
 
-    @GetMapping(
-            path = "/{userId}/{teamId}",
-            produces = {"application/json"})
+    @GetMapping(path = "/{userId}/{teamId}")
     public ResponseEntity<RoleResponse> get(@PathVariable UUID userId, @PathVariable UUID teamId) {
         return ResponseEntity
                 .status(HttpStatus.OK)

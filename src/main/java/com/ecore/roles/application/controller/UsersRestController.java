@@ -24,7 +24,7 @@ public class UsersRestController {
 
     private final UsersService usersService;
 
-    @PostMapping(produces = {"application/json"})
+    @PostMapping
     public ResponseEntity<List<UserResponse>> get() {
         return ResponseEntity
                 .status(200)
@@ -33,7 +33,7 @@ public class UsersRestController {
                         .collect(Collectors.toList()));
     }
 
-    @PostMapping(path = "/{userId}", produces = {"application/json"})
+    @PostMapping(path = "/{userId}")
     public ResponseEntity<UserResponse> get(@PathVariable UUID userId) {
         return ResponseEntity
                 .status(200)
