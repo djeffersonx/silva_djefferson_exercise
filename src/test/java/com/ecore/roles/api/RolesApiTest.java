@@ -1,11 +1,13 @@
 package com.ecore.roles.api;
 
+import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import com.ecore.roles.domain.model.Role;
 import com.ecore.roles.domain.repository.RoleRepository;
+import com.ecore.roles.utils.H2DataBaseExtension;
 import com.ecore.roles.utils.RestAssuredHelper;
-import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -13,23 +15,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
 
-import static com.ecore.roles.utils.RestAssuredHelper.createRole;
-import static com.ecore.roles.utils.RestAssuredHelper.getRole;
-import static com.ecore.roles.utils.RestAssuredHelper.getRoles;
-import static com.ecore.roles.utils.RestAssuredHelper.sendRequest;
-import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
-import static com.ecore.roles.objectmother.RoleObjectMother.devopsTeam;
-import static com.ecore.roles.objectmother.RoleObjectMother.productOwnerRole;
-import static com.ecore.roles.objectmother.RoleObjectMother.testerRole;
+import static com.ecore.roles.objectmother.RoleObjectMother.*;
 import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
+import static com.ecore.roles.utils.RestAssuredHelper.*;
 import static io.restassured.RestAssured.when;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(H2DataBaseExtension.class)
 public class RolesApiTest {
 
     private final RestTemplate restTemplate;
@@ -59,7 +57,7 @@ public class RolesApiTest {
         sendRequest(when()
                 .get("/v1/role")
                 .then())
-                        .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+                .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
     }
 
     @Test
@@ -94,19 +92,22 @@ public class RolesApiTest {
 
     @Test
     void shouldFailToCreateNewRoleWhenNameAlreadyExists() {
+        roleRepository.save(developerRole());
+
         createRole(developerRole())
                 .validate(HttpStatus.CONFLICT.value(), "Role already exists");
     }
 
     @Test
     void shouldGetAllRoles() {
-        RoleResponse[] roles = getRoles()
-                .extract().as(RoleResponse[].class);
+        List.of(developerRole(), productOwnerRole(), testerRole()).forEach(roleRepository::save);
+
+        RoleResponse[] roles = getRoles().extract().as(RoleResponse[].class);
 
         assertThat(roles.length).isGreaterThanOrEqualTo(3);
-        assertThat(roles).contains(RoleResponse.fromModel(developerRole()));
-        assertThat(roles).contains(RoleResponse.fromModel(productOwnerRole()));
-        assertThat(roles).contains(RoleResponse.fromModel(testerRole()));
+        assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole().getName()));
+        assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(productOwnerRole().getName()));
+        assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(testerRole().getName()));
     }
 
     @Test
