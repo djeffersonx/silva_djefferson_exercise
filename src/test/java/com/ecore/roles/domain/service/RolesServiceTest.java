@@ -42,7 +42,7 @@ class RolesServiceTest {
     class CreateRole {
 
         @Test
-        public void shouldCreateRole() {
+        public void givenValidInputShouldCreateIt() {
             Role developerRole = developerRole();
             when(roleRepository.save(any())).thenReturn(developerRole);
             CreateRoleCommand createRoleCommand = createRoleCommand(developerRole);
@@ -56,7 +56,7 @@ class RolesServiceTest {
         }
 
         @Test
-        public void shouldReturnRoleWhenAlreadyExistsByName() {
+        public void givenRoleAlreadyExistsShouldReturnIt() {
             Role developerRole = developerRole();
             when(roleRepository.findByName(developerRole.getName())).thenReturn(Optional.of(developerRole));
             CreateRoleCommand createRoleCommand = createRoleCommand(developerRole);
@@ -71,7 +71,7 @@ class RolesServiceTest {
         }
 
         @Test
-        public void shouldFailToCreateRoleWhenRoleIsNull() {
+        public void givenNullInputShouldThrowException() {
             assertThrows(NullPointerException.class,
                     () -> rolesService.create(null));
         }
@@ -82,20 +82,20 @@ class RolesServiceTest {
     class GetRole {
 
         @Test
-        public void shouldReturnRoleWhenRoleIdExists() {
+        public void givenRoleExistsShouldReturnIt() {
             Role developerRole = developerRole();
             when(roleRepository.findById(developerRole.getId())).thenReturn(Optional.of(developerRole));
 
-            Role role = rolesService.getRole(developerRole.getId());
+            Role role = rolesService.getRequiredRole(developerRole.getId());
 
             assertNotNull(role);
             assertEquals(developerRole, role);
         }
 
         @Test
-        public void shouldFailToGetRoleWhenRoleIdDoesNotExist() {
+        public void givenRoleNotExistsShouldThrowException() {
             ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                    () -> rolesService.getRole(teamLeadId));
+                    () -> rolesService.getRequiredRole(teamLeadId));
 
             assertEquals(format("Role %s not found", teamLeadId), exception.getMessage());
         }

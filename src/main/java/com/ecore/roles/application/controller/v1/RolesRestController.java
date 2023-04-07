@@ -40,7 +40,7 @@ public class RolesRestController {
     @GetMapping(path = "/{roleId}")
     @ResponseStatus(HttpStatus.OK)
     public RoleResponse get(@PathVariable UUID roleId) {
-        return RoleResponse.fromModel(rolesService.getRole(roleId));
+        return RoleResponse.fromModel(rolesService.getRequiredRole(roleId));
     }
 
 }

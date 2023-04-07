@@ -35,7 +35,7 @@ public class RolesService {
 
     }
 
-    public Role getRole(@NonNull UUID roleId) {
+    public Role getRequiredRole(@NonNull UUID roleId) {
         return roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));
     }
