@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/memberships")
+@RequestMapping(value = "/v1/memberships")
 public class MembershipsRestController {
 
     private final MembershipsService membershipsService;

@@ -1,19 +1,16 @@
 package com.ecore.roles.utils;
 
-import com.ecore.roles.application.controller.v1.resources.ApiVersion;
-import com.ecore.roles.domain.model.Membership;
-import com.ecore.roles.domain.model.Role;
 import com.ecore.roles.application.controller.v1.resources.outcome.MembershipResponse;
 import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
+import com.ecore.roles.domain.model.Membership;
+import com.ecore.roles.domain.model.Role;
 import io.restassured.RestAssured;
-import io.restassured.http.Header;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.hamcrest.Matchers;
-import org.springframework.http.HttpHeaders;
 
 import java.util.UUID;
 
@@ -36,23 +33,23 @@ public class RestAssuredHelper {
     public static EcoreValidableResponse createRole(Role role) {
         return sendRequest(givenNullableBody(RoleResponse.fromModel(role))
                 .when()
-                .contentType(ApiVersion.V1_VALUE)
-                .post("/roles")
+                .contentType(JSON)
+                .post("/v1/roles")
                 .then());
     }
 
     public static EcoreValidableResponse getRoles() {
         return sendRequest(when()
-                .get("/roles")
+                .get("/v1/roles")
                 .then());
     }
 
     public static EcoreValidableResponse getRole(UUID roleId) {
         return sendRequest(given()
                 .pathParam("roleId", roleId)
-                .contentType(ApiVersion.V1_VALUE)
+                .contentType(JSON)
                 .when()
-                .get("/roles/{roleId}")
+                .get("/v1/roles/{roleId}")
                 .then());
     }
 
@@ -61,7 +58,7 @@ public class RestAssuredHelper {
                 .queryParam("userId", userId)
                 .queryParam("teamId", teamId)
                 .when()
-                .get("/memberships/roles")
+                .get("/v1/memberships/roles")
                 .then());
     }
 
@@ -69,7 +66,7 @@ public class RestAssuredHelper {
         return sendRequest(givenNullableBody(MembershipResponse.fromModel(membership))
                 .contentType(JSON)
                 .when()
-                .post("/memberships")
+                .post("/v1/memberships")
                 .then());
     }
 
@@ -77,7 +74,7 @@ public class RestAssuredHelper {
         return sendRequest(given()
                 .pathParam("roleId", roleId)
                 .when()
-                .get("/memberships/roles/{roleId}")
+                .get("/v1/memberships/roles/{roleId}")
                 .then());
     }
 

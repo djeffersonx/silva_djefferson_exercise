@@ -1,6 +1,5 @@
 package com.ecore.roles.application.controller.v1;
 
-import com.ecore.roles.application.controller.v1.resources.ApiVersion;
 import com.ecore.roles.application.controller.v1.resources.outcome.UserResponse;
 import com.ecore.roles.domain.client.resources.User;
 import com.ecore.roles.domain.service.UsersService;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/users", headers = ApiVersion.V1)
+@RequestMapping(value = "/v1/users")
 public class UsersRestController {
 
     private final UsersService usersService;

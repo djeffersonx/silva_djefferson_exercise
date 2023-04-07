@@ -1,6 +1,5 @@
 package com.ecore.roles.application.controller.v1;
 
-import com.ecore.roles.application.controller.v1.resources.ApiVersion;
 import com.ecore.roles.application.controller.v1.resources.income.CreateRoleRequest;
 import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
 import com.ecore.roles.domain.service.RolesService;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/roles", headers = ApiVersion.V1)
+@RequestMapping(value = "/v1/roles")
 public class RolesRestController {
 
     private final RolesService rolesService;
