@@ -6,6 +6,7 @@ import com.ecore.roles.domain.repository.RoleRepository;
 import com.ecore.roles.utils.H2DataBaseExtension;
 import com.ecore.roles.utils.RestAssuredHelper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,89 +50,103 @@ public class RolesApiTest {
         RestAssuredHelper.setUp(port);
     }
 
-    @Test
-    void shouldFailWhenPathDoesNotExist() {
-        sendRequest(when()
-                .get("/v1/role")
-                .then())
-                        .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+    @Nested
+    class CreateRole {
+
+        @Test
+        void givenValidRequestShouldCreateTheRole() {
+            Role expectedRole = devopsTeam();
+
+            RoleResponse actualRole = createRole(expectedRole)
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract().as(RoleResponse.class);
+
+            assertThat(actualRole.getName()).isEqualTo(expectedRole.getName());
+        }
+
+        @Test
+        void givenRoleAlreadyExistsShouldReturnTheExistentRole() {
+            Role developerRole = developerRole();
+            roleRepository.save(developerRole);
+
+            RoleResponse role = createRole(developerRole())
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(RoleResponse.class);
+
+            assertThat(roleRepository.findAll().size()).isOne();
+            assertThat(role.getName()).isEqualTo(developerRole.getName());
+        }
+
+        @Test
+        void givenNullRequestBodyShouldReturnBadRequest() {
+            createRole(null)
+                    .validate(HttpStatus.BAD_REQUEST.value(),
+                            "The request input is required, please send a request body");
+        }
+
+        @Test
+        void givenRequestMissingTheNameShouldReturnBadRequest() {
+            createRole(Role.builder().build())
+                    .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
+        }
+
+        @Test
+        void givenRequestWithEmptyNameShouldReturnBadRequest() {
+            createRole(Role.builder().name("").build())
+                    .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
+        }
     }
 
-    @Test
-    void shouldCreateNewRole() {
-        Role expectedRole = devopsTeam();
+    @Nested
+    class GetRoleById {
 
-        RoleResponse actualRole = createRole(expectedRole)
-                .statusCode(HttpStatus.CREATED.value())
-                .extract().as(RoleResponse.class);
+        @Test
+        void givenRoleExistsShouldReturnIt() {
+            Role expectedRole = roleRepository.save(developerRole());
 
-        assertThat(actualRole.getName()).isEqualTo(expectedRole.getName());
+            getRole(expectedRole.getId())
+                    .statusCode(HttpStatus.OK.value())
+                    .body("name", equalTo(expectedRole.getName()));
+        }
+
+        @Test
+        void givenRoleNotExistsShouldReturnBadRequest() {
+            getRole(teamLeadId)
+                    .validate(HttpStatus.NOT_FOUND.value(), format("Role %s not found", teamLeadId));
+        }
     }
 
-    @Test
-    void shouldReturnPersistedRoleWhenAlreadyExists() {
-        Role developerRole = developerRole();
-        roleRepository.save(developerRole);
+    @Nested
+    class GetRoles {
+        @Test
+        void givenPathNotExistsShouldReturnNotFound() {
+            sendRequest(when()
+                    .get("/v1/role")
+                    .then())
+                    .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+        }
 
-        RoleResponse role = createRole(developerRole())
-                .statusCode(HttpStatus.OK.value())
-                .extract().as(RoleResponse.class);
+        @Test
+        void givenExistsListOfRolesShouldReturnThem() {
+            List.of(developerRole(), productOwnerRole(), testerRole()).forEach(roleRepository::save);
 
-        assertThat(roleRepository.findAll().size()).isOne();
-        assertThat(role.getName()).isEqualTo(developerRole.getName());
-    }
+            RoleResponse[] roles = getRoles().extract().as(RoleResponse[].class);
 
-    @Test
-    void shouldFailToCreateNewRoleWhenNull() {
-        createRole(null)
-                .validate(HttpStatus.BAD_REQUEST.value(),
-                        "The request input is required, please send a request body");
-    }
+            assertThat(roles.length).isEqualTo(3);
+            assertContainsByName(developerRole(), roles);
+            assertContainsByName(productOwnerRole(), roles);
+            assertContainsByName(testerRole(), roles);
+        }
 
-    @Test
-    void shouldFailToCreateNewRoleWhenMissingName() {
-        createRole(Role.builder().build())
-                .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
-    }
+        @Test
+        void givenEmptyListShouldReturnNoContent() {
+            getRoles().statusCode(HttpStatus.NO_CONTENT.value());
+        }
 
-    @Test
-    void shouldFailToCreateNewRoleWhenBlankName() {
-        createRole(Role.builder().name("").build())
-                .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
-    }
+        private void assertContainsByName(Role developerRole, RoleResponse[] roles) {
+            assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole.getName()));
+        }
 
-    @Test
-    void shouldGetAllRoles() {
-        List.of(developerRole(), productOwnerRole(), testerRole()).forEach(roleRepository::save);
-
-        RoleResponse[] roles = getRoles().extract().as(RoleResponse[].class);
-
-        assertThat(roles.length).isGreaterThanOrEqualTo(3);
-        assertThat(roles)
-                .anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole().getName()));
-        assertThat(roles)
-                .anySatisfy((role) -> assertThat(role.getName()).isEqualTo(productOwnerRole().getName()));
-        assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(testerRole().getName()));
-    }
-
-    @Test
-    void shouldReturnNoContentWhenNotExistsAnyRole() {
-        getRoles().statusCode(HttpStatus.NO_CONTENT.value());
-    }
-
-    @Test
-    void shouldGetRoleById() {
-        Role expectedRole = roleRepository.save(developerRole());
-
-        getRole(expectedRole.getId())
-                .statusCode(HttpStatus.OK.value())
-                .body("name", equalTo(expectedRole.getName()));
-    }
-
-    @Test
-    void shouldFailToGetRoleById() {
-        getRole(teamLeadId)
-                .validate(HttpStatus.NOT_FOUND.value(), format("Role %s not found", teamLeadId));
     }
 
 }
