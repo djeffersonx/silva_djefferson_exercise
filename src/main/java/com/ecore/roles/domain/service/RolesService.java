@@ -1,5 +1,6 @@
 package com.ecore.roles.domain.service;
 
+import com.ecore.roles.domain.command.CreateRoleCommand;
 import com.ecore.roles.exception.ResourceAlreadyExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.domain.model.Role;
@@ -25,11 +26,11 @@ public class RolesService {
         this.roleRepository = roleRepository;
     }
 
-    public Role create(@NonNull Role role) {
-        if (roleRepository.findByName(role.getName()).isPresent()) {
+    public Role create(@NonNull CreateRoleCommand createRoleCommand) {
+        if (roleRepository.findByName(createRoleCommand.getName()).isPresent()) {
             throw new ResourceAlreadyExistsException(Role.class);
         }
-        return roleRepository.save(role);
+        return roleRepository.save(createRoleCommand.toModel());
     }
 
     public Role getRole(@NonNull UUID roleId) {

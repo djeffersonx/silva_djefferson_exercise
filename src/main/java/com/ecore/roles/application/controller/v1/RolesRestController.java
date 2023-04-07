@@ -23,7 +23,7 @@ public class RolesRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public RoleResponse create(
             @Valid @RequestBody CreateRoleRequest request) {
-        return RoleResponse.fromModel(rolesService.create(request.toModel()));
+        return RoleResponse.fromModel(rolesService.create(request.toCommand()));
     }
 
     @GetMapping

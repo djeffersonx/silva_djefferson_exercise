@@ -1,6 +1,6 @@
-package com.ecore.roles.application.controller.v1.resources.income;
+package com.ecore.roles.domain.command;
 
-import com.ecore.roles.domain.command.CreateRoleCommand;
+import com.ecore.roles.domain.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -12,14 +12,14 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class CreateRoleRequest {
+public class CreateRoleCommand {
 
     @JsonProperty
     @NotBlank(message = "Role name is required")
     private String name;
 
-    public CreateRoleCommand toCommand() {
-        return CreateRoleCommand.builder()
+    public Role toModel() {
+        return Role.builder()
                 .name(this.name)
                 .build();
     }

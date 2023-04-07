@@ -1,5 +1,6 @@
 package com.ecore.roles.objectmother;
 
+import com.ecore.roles.domain.command.CreateRoleCommand;
 import com.ecore.roles.domain.model.Role;
 
 import java.util.UUID;
@@ -9,6 +10,11 @@ public class RoleObjectMother {
     public static final UUID developerRoleId = UUID.fromString("1b3c333b-36e7-4b64-aa15-c22ed5908ce4");
     public static final UUID productOwnerRoleId = UUID.fromString("25bbb7d2-26f3-11ec-9621-0242ac130002");
     public static final UUID testerRoleId = UUID.fromString("37969e22-26f3-11ec-9621-0242ac130002");
+
+    public static CreateRoleCommand createRoleCommand(Role role) {
+        return CreateRoleCommand.builder()
+                .name(role.getName()).build();
+    }
 
     public static Role developerRole() {
         return Role.builder()

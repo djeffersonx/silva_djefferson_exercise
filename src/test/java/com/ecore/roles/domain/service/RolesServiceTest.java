@@ -1,5 +1,6 @@
 package com.ecore.roles.domain.service;
 
+import com.ecore.roles.domain.command.CreateRoleCommand;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.domain.model.Role;
 import com.ecore.roles.domain.repository.MembershipRepository;
@@ -12,12 +13,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.ecore.roles.objectmother.RoleObjectMother.createRoleCommand;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
 import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,9 +41,10 @@ class RolesServiceTest {
     @Test
     public void shouldCreateRole() {
         Role developerRole = developerRole();
-        when(roleRepository.save(developerRole)).thenReturn(developerRole);
+        when(roleRepository.save(any())).thenReturn(developerRole);
+        CreateRoleCommand createRoleCommand = createRoleCommand(developerRole);
 
-        Role role = rolesService.create(developerRole);
+        Role role = rolesService.create(createRoleCommand);
 
         assertNotNull(role);
         assertEquals(developerRole, role);
