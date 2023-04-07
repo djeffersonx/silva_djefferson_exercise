@@ -179,24 +179,6 @@ public class MembershipsApiTests {
         getMemberships(developerRoleId).statusCode(HttpStatus.NO_CONTENT.value());
     }
 
-    // @Test
-    // void shouldFailToGetAllMembershipsWhenRoleIdIsNull() {
-    // getMemberships(null)
-    // .validate(400, "Bad Request");
-    // }
-
-    // @Test
-    // void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingUserId() {
-    // RestAssuredHelper.getMembershipRole(null, ORDINARY_CORAL_LYNX_TEAM_UUID)
-    // .validate(400, "Bad Request");
-    // }
-
-    // @Test
-    // void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingTeamId() {
-    // RestAssuredHelper.getMembershipRole(GIANNI_USER_UUID, null)
-    // .validate(400, "Bad Request");
-    // }
-
     @Test
     void shouldFailToGetRoleByUserIdAndTeamIdWhenItDoesNotExist() {
         givenGetTeamByIdAnswer(mockServer, teamLeadId, null);
