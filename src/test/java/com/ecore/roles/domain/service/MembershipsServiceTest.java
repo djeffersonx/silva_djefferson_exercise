@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static com.ecore.roles.objectmother.MembershipObjectMother.*;
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
-import static com.ecore.roles.objectmother.TeamObjectMother.systemTeam;
+import static com.ecore.roles.objectmother.TeamObjectMother.networkTeam;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -61,7 +61,7 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldReturnPersistedMembershipWhenItExists() {
-        Membership expectedMembership = membership(systemTeam(), developerRole());
+        Membership expectedMembership = membership(networkTeam(), developerRole());
         CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
         givenRoleExists(expectedMembership);
         givenFindMembershipAnswer(expectedMembership, Optional.of(expectedMembership));
@@ -80,7 +80,7 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldFailToCreateMembershipWhenUserNotBelongsToTheTeam() {
-        Membership expectedMembership = membership(systemTeam(), developerRole());
+        Membership expectedMembership = membership(networkTeam(), developerRole());
         CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
         givenRoleExists(expectedMembership);
         givenUserNotBelongsToTheTeam(expectedMembership);

@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.ecore.roles.objectmother.TeamObjectMother.systemTeam;
+import static com.ecore.roles.objectmother.TeamObjectMother.networkTeam;
 import static com.ecore.roles.objectmother.TeamObjectMother.defaultTeamId;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -25,7 +25,7 @@ class TeamsServiceTest {
 
     @Test
     void shouldGetTeamWhenTeamIdExists() {
-        Team ordinaryCoralLynxTeam = systemTeam();
+        Team ordinaryCoralLynxTeam = networkTeam();
         when(TeamsClient.getTeam(defaultTeamId))
                 .thenReturn(Optional.of(ordinaryCoralLynxTeam));
         assertNotNull(TeamsService.getTeam(defaultTeamId));

@@ -26,7 +26,7 @@ public class MembershipObjectMother {
                 .id(membershipId)
                 .role(RoleObjectMother.developerRole())
                 .userId(UserObjectMother.jamesUserId)
-                .teamId(TeamObjectMother.systemTeam().getId())
+                .teamId(TeamObjectMother.networkTeam().getId())
                 .build();
     }
 
@@ -44,7 +44,7 @@ public class MembershipObjectMother {
                 .id(membershipId)
                 .role(RoleObjectMother.developerRole())
                 .userId(UserObjectMother.oliviaUserId)
-                .teamId(TeamObjectMother.systemTeam().getId())
+                .teamId(TeamObjectMother.networkTeam().getId())
                 .build();
     }
 

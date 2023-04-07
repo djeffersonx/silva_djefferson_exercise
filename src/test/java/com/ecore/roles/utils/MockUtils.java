@@ -19,7 +19,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 public class MockUtils {
 
-    public static void givenGetUsers(MockRestServiceServer mockServer, List<User> users) {
+    public static void givenGetUsersAnswer(MockRestServiceServer mockServer, List<User> users) {
         try {
             mockServer.expect(requestTo("http://test.com/users"))
                     .andExpect(method(HttpMethod.GET))
@@ -40,6 +40,19 @@ public class MockUtils {
                             withStatus(HttpStatus.OK)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .body(new ObjectMapper().writeValueAsString(user)));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void givenGetTeamsAnswer(MockRestServiceServer mockServer, List<Team> teams) {
+        try {
+            mockServer.expect(requestTo("http://test.com/teams"))
+                    .andExpect(method(HttpMethod.GET))
+                    .andRespond(
+                            withStatus(HttpStatus.OK)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .body(new ObjectMapper().writeValueAsString(teams)));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
