@@ -6,6 +6,7 @@ import com.ecore.roles.domain.repository.MembershipRepository;
 import com.ecore.roles.domain.repository.RoleRepository;
 import com.ecore.roles.domain.service.resource.IdempotentOutput;
 import com.ecore.roles.exception.InvalidInputException;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,64 +36,69 @@ class MembershipsServiceTest {
     @Mock
     private TeamsService teamsService;
 
-    @Test
-    public void shouldCreateMembership() {
-        Membership expectedMembership = defaultMembership();
-        CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
-        givenRoleExists(expectedMembership);
-        givenFindMembershipAnswer(expectedMembership, Optional.empty());
-        givenMembershipRepositorySaveWithSuccess(expectedMembership);
-        givenUserBelongsToTheTeam(expectedMembership);
+    @Nested
+    class CreateMembership {
 
-        IdempotentOutput<Membership> idempotent = membershipsService.create(createMembershipCommand);
-        Membership model = idempotent.getModel();
+        @Test
+        public void givenValidRequestShouldCreateIt() {
+            Membership expectedMembership = defaultMembership();
+            CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
+            givenRoleExists(expectedMembership);
+            givenFindMembershipAnswer(expectedMembership, Optional.empty());
+            givenMembershipRepositorySaveWithSuccess(expectedMembership);
+            givenUserBelongsToTheTeam(expectedMembership);
 
-        assertNotNull(model);
-        assertEquals(model, expectedMembership);
-        assertEquals(true, idempotent.isCreated());
+            IdempotentOutput<Membership> idempotent = membershipsService.create(createMembershipCommand);
+            Membership model = idempotent.getModel();
 
-        verify(roleRepository).findById(expectedMembership.getRole().getId());
-    }
+            assertNotNull(model);
+            assertEquals(model, expectedMembership);
+            assertEquals(true, idempotent.isCreated());
 
-    @Test
-    public void shouldFailToCreateMembershipWhenMembershipIsNull() {
-        assertThrows(NullPointerException.class, () -> membershipsService.create(null));
-    }
+            verify(roleRepository).findById(expectedMembership.getRole().getId());
+        }
 
-    @Test
-    public void shouldReturnPersistedMembershipWhenItExists() {
-        Membership expectedMembership = membership(networkTeam(), developerRole());
-        CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
-        givenRoleExists(expectedMembership);
-        givenFindMembershipAnswer(expectedMembership, Optional.of(expectedMembership));
-        givenUserBelongsToTheTeam(expectedMembership);
+        @Test
+        public void givenNullRequestBodyShouldFail() {
+            assertThrows(NullPointerException.class, () -> membershipsService.create(null));
+        }
 
-        IdempotentOutput<Membership> idempotent = membershipsService.create(createMembershipCommand);
-        Membership model = idempotent.getModel();
+        @Test
+        public void givenMembershipAlreadyExistsShouldReturnIt() {
+            Membership expectedMembership = membership(networkTeam(), developerRole());
+            CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
+            givenRoleExists(expectedMembership);
+            givenFindMembershipAnswer(expectedMembership, Optional.of(expectedMembership));
+            givenUserBelongsToTheTeam(expectedMembership);
 
-        assertFalse(idempotent.isCreated());
-        assertEquals(expectedMembership.getId(), model.getId());
-        verify(membershipRepository, times(0)).save(any());
-        verify(roleRepository, times(0)).getById(any());
-        verify(usersService, times(0)).getUser(any());
-        verify(teamsService, times(0)).getTeam(any());
-    }
+            IdempotentOutput<Membership> idempotent = membershipsService.create(createMembershipCommand);
+            Membership model = idempotent.getModel();
 
-    @Test
-    public void shouldFailToCreateMembershipWhenUserNotBelongsToTheTeam() {
-        Membership expectedMembership = membership(networkTeam(), developerRole());
-        CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
-        givenRoleExists(expectedMembership);
-        givenUserNotBelongsToTheTeam(expectedMembership);
+            assertFalse(idempotent.isCreated());
+            assertEquals(expectedMembership.getId(), model.getId());
+            verify(membershipRepository, times(0)).save(any());
+            verify(roleRepository, times(0)).getById(any());
+            verify(usersService, times(0)).getUser(any());
+            verify(teamsService, times(0)).getTeam(any());
+        }
 
-        InvalidInputException exception = assertThrows(InvalidInputException.class,
-                () -> membershipsService.create(createMembershipCommand));
+        @Test
+        public void givenUserNotBelongsToTheTeamShouldThrowException() {
+            Membership expectedMembership = membership(networkTeam(), developerRole());
+            CreateMembershipCommand createMembershipCommand = createMembershipCommand(expectedMembership);
+            givenRoleExists(expectedMembership);
+            givenUserNotBelongsToTheTeam(expectedMembership);
 
-        assertEquals("Invalid 'Membership' object. " +
-                "The provided user doesn't belong to the provided team.", exception.getMessage());
-        verify(roleRepository, times(0)).getById(any());
-        verify(usersService, times(0)).getUser(any());
-        verify(teamsService, times(0)).getTeam(any());
+            InvalidInputException exception = assertThrows(InvalidInputException.class,
+                    () -> membershipsService.create(createMembershipCommand));
+
+            assertEquals("Invalid 'Membership' object. " +
+                    "The provided user doesn't belong to the provided team.", exception.getMessage());
+            verify(roleRepository, times(0)).getById(any());
+            verify(usersService, times(0)).getUser(any());
+            verify(teamsService, times(0)).getTeam(any());
+        }
+
     }
 
     private void givenRoleExists(Membership membership) {
@@ -103,7 +109,7 @@ class MembershipsServiceTest {
     private void givenFindMembershipAnswer(Membership membership, Optional<Membership> answer) {
         when(membershipRepository.findByUserIdAndTeamId(membership.getUserId(),
                 membership.getTeamId()))
-                        .thenReturn(answer);
+                .thenReturn(answer);
     }
 
     private void givenMembershipRepositorySaveWithSuccess(Membership membership) {
