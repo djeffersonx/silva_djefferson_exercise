@@ -22,7 +22,7 @@ public class TeamsService {
         this.teamsClient = teamsClient;
     }
 
-    public Team getTeam(@NotNull UUID id) {
+    public Team getRequiredTeam(@NotNull UUID id) {
         return teamsClient.getTeam(id).orElseThrow(() -> new ResourceNotFoundException(Team.class, id));
     }
 
@@ -31,6 +31,6 @@ public class TeamsService {
     }
 
     public boolean userBelongsToTeam(@NotNull UUID userId, @NotNull UUID teamId) {
-        return getTeam(teamId).getTeamMemberIds().contains(userId);
+        return getRequiredTeam(teamId).getTeamMemberIds().contains(userId);
     }
 }

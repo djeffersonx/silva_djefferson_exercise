@@ -29,7 +29,7 @@ public class TeamsRestController {
     @GetMapping(path = "/{teamId}")
     @ResponseStatus(HttpStatus.OK)
     public TeamResponse get(@PathVariable @NotNull UUID teamId) {
-        return TeamResponse.fromModel(teamsService.getTeam(teamId));
+        return TeamResponse.fromModel(teamsService.getRequiredTeam(teamId));
     }
 
 }

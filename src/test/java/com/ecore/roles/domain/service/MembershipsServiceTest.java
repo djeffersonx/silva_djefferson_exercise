@@ -79,7 +79,7 @@ class MembershipsServiceTest {
             verify(membershipRepository, times(0)).save(any());
             verify(roleRepository, times(0)).getById(any());
             verify(usersService, times(0)).getUser(any());
-            verify(teamsService, times(0)).getTeam(any());
+            verify(teamsService, times(0)).getRequiredTeam(any());
         }
 
         @Test
@@ -96,7 +96,7 @@ class MembershipsServiceTest {
                     "The provided user doesn't belong to the provided team.", exception.getMessage());
             verify(roleRepository, times(0)).getById(any());
             verify(usersService, times(0)).getUser(any());
-            verify(teamsService, times(0)).getTeam(any());
+            verify(teamsService, times(0)).getRequiredTeam(any());
         }
 
     }

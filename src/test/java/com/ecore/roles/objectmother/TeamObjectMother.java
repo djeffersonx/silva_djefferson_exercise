@@ -17,7 +17,8 @@ public class TeamObjectMother {
         if (full) {
             team.setTeamLeadId(teamLeadId);
             team.setTeamMemberIds(
-                    Lists.list(UserObjectMother.maryUserId, UserObjectMother.johnUserId,
+                    Lists.list(UserObjectMother.maryUserId,
+                            UserObjectMother.johnUserId,
                             UserObjectMother.jamesUserId));
         }
         return team;
