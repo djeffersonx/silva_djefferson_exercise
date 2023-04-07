@@ -22,14 +22,12 @@ public class DefaultExceptionHandler {
         return createResponse(HttpStatus.BAD_REQUEST.value(), exception.getFieldError().getDefaultMessage());
     }
 
-
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException exception) {
         log.warn("Message not readable: " + exception.getMessage(), exception);
         return createResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "The request input is required, please send a request body"
-        );
+                "The request input is required, please send a request body");
     }
 
     @ExceptionHandler

@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-
 import static com.ecore.roles.objectmother.RoleObjectMother.developerRole;
 import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
 import static java.lang.String.format;

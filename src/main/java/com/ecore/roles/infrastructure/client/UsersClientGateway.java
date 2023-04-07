@@ -45,7 +45,7 @@ public class UsersClientGateway implements UsersClient {
                 clientsConfigurationProperties.getUsersApiHost(),
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<UserResponse>>() {
-                }).getBody().stream().map(user -> user.toDomain()).collect(Collectors.toList());
+                new ParameterizedTypeReference<List<UserResponse>>() {}).getBody().stream()
+                .map(user -> user.toDomain()).collect(Collectors.toList());
     }
 }

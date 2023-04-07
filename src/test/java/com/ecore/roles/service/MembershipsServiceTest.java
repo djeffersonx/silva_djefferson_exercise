@@ -56,7 +56,6 @@ class MembershipsServiceTest {
         verify(roleRepository).findById(expectedMembership.getRole().getId());
     }
 
-
     @Test
     public void shouldFailToCreateMembershipWhenMembershipsIsNull() {
         assertThrows(NullPointerException.class,
@@ -105,8 +104,9 @@ class MembershipsServiceTest {
     }
 
     private void givenMembershipDoesntExistsYet(Membership expectedMembership, Optional<Membership> empty) {
-        when(membershipRepository.findByUserIdAndTeamId(expectedMembership.getUserId(), expectedMembership.getTeamId()))
-                .thenReturn(empty);
+        when(membershipRepository.findByUserIdAndTeamId(expectedMembership.getUserId(),
+                expectedMembership.getTeamId()))
+                        .thenReturn(empty);
     }
 
     private void givenMembershipRepositoryPersistesWithSuccess(Membership expectedMembership) {
@@ -114,7 +114,8 @@ class MembershipsServiceTest {
     }
 
     private void givenUserBelongsToTheTeam(Membership expectedMembership) {
-        when(teamsService.userBelongsToTeam(expectedMembership.getUserId(), expectedMembership.getTeamId())).thenReturn(true);
+        when(teamsService.userBelongsToTeam(expectedMembership.getUserId(), expectedMembership.getTeamId()))
+                .thenReturn(true);
     }
 
 }

@@ -32,7 +32,8 @@ public class RolesRestController {
     public ResponseEntity<List<RoleResponse>> get() {
         return ResponseEntity
                 .status(200)
-                .body(rolesService.getRoles().stream().map(RoleResponse::fromModel).collect(Collectors.toList()));
+                .body(rolesService.getRoles().stream().map(RoleResponse::fromModel)
+                        .collect(Collectors.toList()));
     }
 
     @GetMapping(path = "/{roleId}")

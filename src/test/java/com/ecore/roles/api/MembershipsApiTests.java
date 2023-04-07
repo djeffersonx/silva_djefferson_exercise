@@ -163,11 +163,11 @@ public class MembershipsApiTests {
         assertThat(actualMemberships.length).isEqualTo(0);
     }
 
-//    @Test
-//    void shouldFailToGetAllMembershipsWhenRoleIdIsNull() {
-//        getMemberships(null)
-//                .validate(400, "Bad Request");
-//    }
+    // @Test
+    // void shouldFailToGetAllMembershipsWhenRoleIdIsNull() {
+    // getMemberships(null)
+    // .validate(400, "Bad Request");
+    // }
 
     // @Test
     // void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingUserId() {

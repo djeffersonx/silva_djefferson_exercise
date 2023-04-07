@@ -17,8 +17,8 @@ public class TeamObjectMother {
         if (full) {
             team.setTeamLeadId(teamLeadId);
             team.setTeamMemberIds(
-                    Lists.list(UserObjectMother.userIdOne, UserObjectMother.userIdTwo, UserObjectMother.userIdThree)
-            );
+                    Lists.list(UserObjectMother.userIdOne, UserObjectMother.userIdTwo,
+                            UserObjectMother.userIdThree));
         }
         return team;
     }
@@ -26,6 +26,5 @@ public class TeamObjectMother {
     public static Team systemTeam() {
         return systemTeam(true);
     }
-
 
 }

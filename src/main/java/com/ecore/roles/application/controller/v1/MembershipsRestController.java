@@ -37,8 +37,8 @@ public class MembershipsRestController {
                 .status(HttpStatus.OK)
                 .body(membershipsService.getMemberships(roleId)
                         .stream().map(
-                                MembershipResponse::fromModel
-                        ).collect(Collectors.toList()));
+                                MembershipResponse::fromModel)
+                        .collect(Collectors.toList()));
     }
 
     @GetMapping(path = "/roles")

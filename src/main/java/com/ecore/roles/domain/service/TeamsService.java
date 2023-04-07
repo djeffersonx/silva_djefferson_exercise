@@ -6,6 +6,7 @@ import com.ecore.roles.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class TeamsService {
         this.teamsClient = teamsClient;
     }
 
-    public Team getTeam(UUID id) {
+    public Team getTeam(@NotNull UUID id) {
         return teamsClient.getTeam(id).orElseThrow(() -> new ResourceNotFoundException(Team.class, id));
     }
 
@@ -27,7 +28,7 @@ public class TeamsService {
         return teamsClient.getTeams();
     }
 
-    public boolean userBelongsToTeam(UUID userId, UUID teamId) {
+    public boolean userBelongsToTeam(@NotNull UUID userId, @NotNull UUID teamId) {
         return getTeam(teamId).getTeamMemberIds().contains(userId);
     }
 }

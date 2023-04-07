@@ -5,6 +5,7 @@ import com.ecore.roles.domain.client.resources.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class UsersService {
         this.usersClient = usersClient;
     }
 
-    public Optional<User> getUser(UUID id) {
+    public Optional<User> getUser(@NotNull UUID id) {
         return usersClient.getUser(id);
     }
 

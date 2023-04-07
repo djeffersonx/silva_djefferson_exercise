@@ -39,11 +39,10 @@ public class TeamsClientGateway implements TeamsClient {
     @Override
     public List<Team> getTeams() {
         return restTemplate.exchange(
-                        clientsConfigurationProperties.getTeamsApiHost(),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<TeamResponse>>() {
-                        })
+                clientsConfigurationProperties.getTeamsApiHost(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<TeamResponse>>() {})
                 .getBody().stream().map(teamResponse -> teamResponse.toDomain())
                 .collect(Collectors.toList());
     }

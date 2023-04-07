@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public class MembershipObjectMother {
 
-
     public static final UUID membershipId =
             UUID.fromString("98de61a0-b9e3-11ec-8422-0242ac120002");
 
