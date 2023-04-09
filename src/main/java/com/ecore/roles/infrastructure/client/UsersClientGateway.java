@@ -4,6 +4,8 @@ import com.ecore.roles.domain.client.UsersClient;
 import com.ecore.roles.domain.client.resources.User;
 import com.ecore.roles.infrastructure.client.resources.UserResponse;
 import com.ecore.roles.infrastructure.configuration.ClientsConfigurationProperties;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -24,6 +26,8 @@ public class UsersClientGateway implements UsersClient {
     private final ClientsConfigurationProperties clientsConfigurationProperties;
 
     @Override
+    @Retry(name = "getUser")
+    @CircuitBreaker(name = "getUser")
     public Optional<User> getUser(UUID id) {
 
         ResponseEntity<UserResponse> userResponse = restTemplate.exchange(
@@ -40,12 +44,15 @@ public class UsersClientGateway implements UsersClient {
     }
 
     @Override
+    @Retry(name = "getUsers")
+    @CircuitBreaker(name = "getUsers")
     public List<User> getUsers() {
         return restTemplate.exchange(
-                clientsConfigurationProperties.getUsersApiHost(),
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<UserResponse>>() {}).getBody().stream()
+                        clientsConfigurationProperties.getUsersApiHost(),
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<UserResponse>>() {
+                        }).getBody().stream()
                 .map(user -> user.toDomain()).collect(Collectors.toList());
     }
 }

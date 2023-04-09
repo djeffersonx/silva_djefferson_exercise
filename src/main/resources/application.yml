@@ -1,8 +1,16 @@
 spring:
+  application:
+    name: roles-service
   datasource:
     url: jdbc:h2:mem:test
     username: a
     password: password
+
+info:
+  name: ${spring.application.name}
+  description: role-service management
+  environment: ${spring.profiles.active}
+  version: 0.0.1
 
 clients:
   users-api-host: https://cgjresszgg.execute-api.eu-west-1.amazonaws.com/users
@@ -11,3 +19,27 @@ clients:
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+#  show-actuator: true
+
+resilience4j:
+  retry:
+    configs:
+      default:
+        registerHealthIndicator: true
+        maxRetryAttempts: 3
+        waitDuration: 1s
+
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: TIME_BASED
+        minimumNumberOfCalls: 20
+        waitDurationInOpenState: 50s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+
+management.metrics.tags.application: ${spring.application.name}
+management.endpoints.web.exposure.include: '*'
