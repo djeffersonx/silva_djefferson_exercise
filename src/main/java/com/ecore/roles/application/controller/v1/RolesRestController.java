@@ -25,8 +25,7 @@ public class RolesRestController {
     public ResponseEntity<RoleResponse> create(
             @Valid @RequestBody CreateRoleRequest request) {
         return IdempotentOutputResponseEntity.get(
-                rolesService.create(request.toCommand()), RoleResponse::fromModel
-        );
+                rolesService.create(request.toCommand()), RoleResponse::fromModel);
     }
 
     @GetMapping

@@ -58,7 +58,7 @@ public class TeamsApiTest {
                             .pathParam("teamId", team.getId())
                             .get("/v1/teams/{teamId}")
                             .then())
-                    .statusCode(HttpStatus.OK.value()).extract().as(TeamResponse.class);
+                                    .statusCode(HttpStatus.OK.value()).extract().as(TeamResponse.class);
 
             assertThat(teamResponse).isEqualTo(TeamResponse.fromModel(team));
         }
@@ -73,7 +73,7 @@ public class TeamsApiTest {
                             .pathParam("teamId", team.getId())
                             .get("/v1/teams/{teamId}")
                             .then())
-                    .statusCode(HttpStatus.NOT_FOUND.value());
+                                    .statusCode(HttpStatus.NOT_FOUND.value());
 
         }
 
@@ -83,7 +83,7 @@ public class TeamsApiTest {
                     given()
                             .get("/v1/teams/INVALID_UUID")
                             .then())
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -93,8 +93,7 @@ public class TeamsApiTest {
         @Test
         void givenExistsTeamsListShouldReturnIt() {
             MockUtils.givenGetTeamsAnswer(mockServer, List.of(
-                    TeamObjectMother.engineeringTeam(), TeamObjectMother.networkTeam())
-            );
+                    TeamObjectMother.engineeringTeam(), TeamObjectMother.networkTeam()));
 
             List<TeamResponse> users = Arrays.asList(sendRequest(given().get("/v1/teams").then())
                     .statusCode(HttpStatus.OK.value()).extract().as(TeamResponse[].class));
@@ -111,7 +110,7 @@ public class TeamsApiTest {
                     given()
                             .get("/v1/teams")
                             .then())
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                                    .statusCode(HttpStatus.NO_CONTENT.value());
 
         }
 

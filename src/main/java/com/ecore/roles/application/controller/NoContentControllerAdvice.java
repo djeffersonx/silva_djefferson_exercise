@@ -15,14 +15,20 @@ import java.util.List;
 class NoContentControllerAdvice implements ResponseBodyAdvice<List<?>> {
 
     @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(
+            MethodParameter returnType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return List.class.isAssignableFrom(returnType.getParameterType());
     }
 
     @Override
-    public List<?> beforeBodyWrite(List<?> body, MethodParameter returnType, MediaType selectedContentType,
-                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                   ServerHttpRequest request, ServerHttpResponse response) {
+    public List<?> beforeBodyWrite(
+            List<?> body,
+            MethodParameter returnType,
+            MediaType selectedContentType,
+            Class<? extends HttpMessageConverter<?>> selectedConverterType,
+            ServerHttpRequest request,
+            ServerHttpResponse response) {
 
         if (body.isEmpty()) {
             response.setStatusCode(HttpStatus.NO_CONTENT);

@@ -51,13 +51,11 @@ public class DefaultExceptionHandler {
         return createResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 
-
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(MethodArgumentTypeMismatchException exception) {
         log.warn("Type mismatch: " + exception.getMessage(), exception);
         return createResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
-
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(IllegalStateException exception) {

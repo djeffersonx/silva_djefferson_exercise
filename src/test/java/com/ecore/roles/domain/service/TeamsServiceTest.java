@@ -45,7 +45,8 @@ class TeamsServiceTest {
             Team networkTeam = engineeringTeam();
             when(teamsClient.getTeam(networkTeam.getId())).thenReturn(Optional.empty());
 
-            assertThrows(ResourceNotFoundException.class, () -> teamsService.getRequiredTeam(networkTeam.getId()));
+            assertThrows(ResourceNotFoundException.class,
+                    () -> teamsService.getRequiredTeam(networkTeam.getId()));
         }
 
     }
@@ -88,6 +89,5 @@ class TeamsServiceTest {
         }
 
     }
-
 
 }

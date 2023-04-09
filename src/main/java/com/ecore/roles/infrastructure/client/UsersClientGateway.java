@@ -48,11 +48,10 @@ public class UsersClientGateway implements UsersClient {
     @CircuitBreaker(name = "getUsers")
     public List<User> getUsers() {
         return restTemplate.exchange(
-                        clientsConfigurationProperties.getUsersApiHost(),
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<UserResponse>>() {
-                        }).getBody().stream()
+                clientsConfigurationProperties.getUsersApiHost(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<UserResponse>>() {}).getBody().stream()
                 .map(user -> user.toDomain()).collect(Collectors.toList());
     }
 }

@@ -197,8 +197,8 @@ public class MembershipsApiTests {
         createMembership(expectedMembership).statusCode(HttpStatus.CREATED.value());
 
         RestAssuredHelper.getMembershipRole(
-                        expectedMembership.getUserId(),
-                        expectedMembership.getTeamId())
+                expectedMembership.getUserId(),
+                expectedMembership.getTeamId())
                 .statusCode(HttpStatus.OK.value())
                 .body("name", equalTo(expectedMembership.getRole().getName()));
     }

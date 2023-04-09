@@ -47,7 +47,6 @@ public class UsersApiTest {
         RestAssuredHelper.setUp(port);
     }
 
-
     @Nested
     class GetUserById {
 
@@ -60,7 +59,7 @@ public class UsersApiTest {
                             .pathParam("userId", user.getId())
                             .get("/v1/users/{userId}")
                             .then())
-                    .statusCode(HttpStatus.OK.value()).extract().as(UserResponse.class);
+                                    .statusCode(HttpStatus.OK.value()).extract().as(UserResponse.class);
 
             assertThat(userResponse).isEqualTo(UserResponse.fromModel(user));
         }
@@ -75,7 +74,7 @@ public class UsersApiTest {
                             .pathParam("userId", user.getId())
                             .get("/v1/users/{userId}")
                             .then())
-                    .statusCode(HttpStatus.NOT_FOUND.value());
+                                    .statusCode(HttpStatus.NOT_FOUND.value());
 
         }
 
@@ -85,7 +84,7 @@ public class UsersApiTest {
                     given()
                             .get("/v1/users/INVALID_UUID")
                             .then())
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
 
     }
@@ -96,8 +95,7 @@ public class UsersApiTest {
         @Test
         void givenExistsListOfUsersShouldReturnIt() {
             MockUtils.givenGetUsersAnswer(mockServer, List.of(
-                    userMary(), userJohn())
-            );
+                    userMary(), userJohn()));
             List<UserResponse> users = Arrays.asList(sendRequest(given().get("/v1/users").then())
                     .statusCode(HttpStatus.OK.value()).extract().as(UserResponse[].class));
 
@@ -112,10 +110,9 @@ public class UsersApiTest {
                     given()
                             .get("/v1/users")
                             .then())
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                                    .statusCode(HttpStatus.NO_CONTENT.value());
 
         }
     }
-
 
 }

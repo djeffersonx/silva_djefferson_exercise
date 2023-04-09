@@ -123,7 +123,7 @@ public class RolesApiTest {
             sendRequest(when()
                     .get("/v1/role")
                     .then())
-                    .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+                            .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
         }
 
         @Test
@@ -144,7 +144,8 @@ public class RolesApiTest {
         }
 
         private void assertContainsByName(Role developerRole, RoleResponse[] roles) {
-            assertThat(roles).anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole.getName()));
+            assertThat(roles)
+                    .anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole.getName()));
         }
 
     }
