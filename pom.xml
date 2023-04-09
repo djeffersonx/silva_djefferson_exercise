@@ -19,6 +19,7 @@
         <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
         <rest-assured.version>4.5.1</rest-assured.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+        <resilience4j.version>1.7.1</resilience4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -66,11 +67,13 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.6.15</version>
         </dependency>
+
         <dependency>
             <groupId>io.github.resilience4j</groupId>
             <artifactId>resilience4j-spring-boot2</artifactId>
-            <version>2.0.2</version>
+            <version>${resilience4j.version}</version>
         </dependency>
+
         <!--test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
