@@ -1,41 +1,33 @@
 package com.ecore.roles.api;
 
-import com.ecore.roles.model.Membership;
-import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.RoleRepository;
+import com.ecore.roles.application.controller.v1.resources.outcome.RoleResponse;
+import com.ecore.roles.domain.model.Role;
+import com.ecore.roles.domain.repository.RoleRepository;
+import com.ecore.roles.utils.H2DataBaseExtension;
 import com.ecore.roles.utils.RestAssuredHelper;
-import com.ecore.roles.web.dto.RoleDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Optional;
+import java.util.List;
 
-import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
-import static com.ecore.roles.utils.RestAssuredHelper.createMembership;
-import static com.ecore.roles.utils.RestAssuredHelper.createRole;
-import static com.ecore.roles.utils.RestAssuredHelper.getRole;
-import static com.ecore.roles.utils.RestAssuredHelper.getRoles;
-import static com.ecore.roles.utils.RestAssuredHelper.sendRequest;
-import static com.ecore.roles.utils.TestData.DEFAULT_MEMBERSHIP;
-import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
-import static com.ecore.roles.utils.TestData.DEVOPS_ROLE;
-import static com.ecore.roles.utils.TestData.GIANNI_USER_UUID;
-import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM;
-import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM_UUID;
-import static com.ecore.roles.utils.TestData.PRODUCT_OWNER_ROLE;
-import static com.ecore.roles.utils.TestData.TESTER_ROLE;
-import static com.ecore.roles.utils.TestData.UUID_1;
+import static com.ecore.roles.objectmother.RoleObjectMother.*;
+import static com.ecore.roles.objectmother.TeamObjectMother.teamLeadId;
+import static com.ecore.roles.utils.RestAssuredHelper.*;
 import static io.restassured.RestAssured.when;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(H2DataBaseExtension.class)
 public class RolesApiTest {
 
     private final RestTemplate restTemplate;
@@ -56,107 +48,106 @@ public class RolesApiTest {
     void setUp() {
         mockServer = MockRestServiceServer.createServer(restTemplate);
         RestAssuredHelper.setUp(port);
-        Optional<Role> devOpsRole = roleRepository.findByName(DEVOPS_ROLE().getName());
-        devOpsRole.ifPresent(roleRepository::delete);
     }
 
-    @Test
-    void shouldFailWhenPathDoesNotExist() {
-        sendRequest(when()
-                .get("/v1/role")
-                .then())
-                        .validate(404, "Not Found");
+    @Nested
+    class CreateRole {
+
+        @Test
+        void givenValidRequestShouldCreateTheRole() {
+            Role expectedRole = devopsTeam();
+
+            RoleResponse actualRole = createRole(expectedRole)
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract().as(RoleResponse.class);
+
+            assertThat(actualRole.getName()).isEqualTo(expectedRole.getName());
+        }
+
+        @Test
+        void givenRoleAlreadyExistsShouldReturnTheExistentRole() {
+            Role developerRole = developerRole();
+            roleRepository.save(developerRole);
+
+            RoleResponse role = createRole(developerRole())
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(RoleResponse.class);
+
+            assertThat(roleRepository.findAll().size()).isOne();
+            assertThat(role.getName()).isEqualTo(developerRole.getName());
+        }
+
+        @Test
+        void givenNullRequestBodyShouldReturnBadRequest() {
+            createRole(null)
+                    .validate(HttpStatus.BAD_REQUEST.value(),
+                            "The request input is required, please send a request body");
+        }
+
+        @Test
+        void givenRequestMissingTheNameShouldReturnBadRequest() {
+            createRole(Role.builder().build())
+                    .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
+        }
+
+        @Test
+        void givenRequestWithEmptyNameShouldReturnBadRequest() {
+            createRole(Role.builder().name("").build())
+                    .validate(HttpStatus.BAD_REQUEST.value(), "Role name is required");
+        }
     }
 
-    @Test
-    void shouldCreateNewRole() {
-        Role expectedRole = DEVOPS_ROLE();
+    @Nested
+    class GetRoleById {
 
-        RoleDto actualRole = createRole(expectedRole)
-                .statusCode(201)
-                .extract().as(RoleDto.class);
+        @Test
+        void givenRoleExistsShouldReturnIt() {
+            Role expectedRole = roleRepository.save(developerRole());
 
-        assertThat(actualRole.getName()).isEqualTo(expectedRole.getName());
+            getRole(expectedRole.getId())
+                    .statusCode(HttpStatus.OK.value())
+                    .body("name", equalTo(expectedRole.getName()));
+        }
+
+        @Test
+        void givenRoleNotExistsShouldReturnBadRequest() {
+            getRole(teamLeadId)
+                    .validate(HttpStatus.NOT_FOUND.value(), format("Role %s not found", teamLeadId));
+        }
     }
 
-    @Test
-    void shouldFailToCreateNewRoleWhenNull() {
-        createRole(null)
-                .validate(400, "Bad Request");
+    @Nested
+    class GetRoles {
+        @Test
+        void givenPathNotExistsShouldReturnNotFound() {
+            sendRequest(when()
+                    .get("/v1/role")
+                    .then())
+                            .validate(HttpStatus.NOT_FOUND.value(), "Not Found");
+        }
+
+        @Test
+        void givenExistsListOfRolesShouldReturnThem() {
+            List.of(developerRole(), productOwnerRole(), testerRole()).forEach(roleRepository::save);
+
+            RoleResponse[] roles = getRoles().extract().as(RoleResponse[].class);
+
+            assertThat(roles.length).isEqualTo(3);
+            assertContainsByName(developerRole(), roles);
+            assertContainsByName(productOwnerRole(), roles);
+            assertContainsByName(testerRole(), roles);
+        }
+
+        @Test
+        void givenEmptyListShouldReturnNoContent() {
+            getRoles().statusCode(HttpStatus.NO_CONTENT.value());
+        }
+
+        private void assertContainsByName(Role developerRole, RoleResponse[] roles) {
+            assertThat(roles)
+                    .anySatisfy((role) -> assertThat(role.getName()).isEqualTo(developerRole.getName()));
+        }
+
     }
 
-    @Test
-    void shouldFailToCreateNewRoleWhenMissingName() {
-        createRole(Role.builder().build())
-                .validate(400, "Bad Request");
-    }
-
-    @Test
-    void shouldFailToCreateNewRoleWhenBlankName() {
-        createRole(Role.builder().name("").build())
-                .validate(400, "Bad Request");
-    }
-
-    @Test
-    void shouldFailToCreateNewRoleWhenNameAlreadyExists() {
-        createRole(DEVELOPER_ROLE())
-                .validate(400, "Role already exists");
-    }
-
-    @Test
-    void shouldGetAllRoles() {
-        RoleDto[] roles = getRoles()
-                .extract().as(RoleDto[].class);
-
-        assertThat(roles.length).isGreaterThanOrEqualTo(3);
-        assertThat(roles).contains(RoleDto.fromModel(DEVELOPER_ROLE()));
-        assertThat(roles).contains(RoleDto.fromModel(PRODUCT_OWNER_ROLE()));
-        assertThat(roles).contains(RoleDto.fromModel(TESTER_ROLE()));
-    }
-
-    @Test
-    void shouldGetRoleById() {
-        Role expectedRole = DEVELOPER_ROLE();
-
-        getRole(expectedRole.getId())
-                .statusCode(200)
-                .body("name", equalTo(expectedRole.getName()));
-    }
-
-    @Test
-    void shouldFailToGetRoleById() {
-        getRole(UUID_1)
-                .validate(404, format("Role %s not found", UUID_1));
-    }
-
-    @Test
-    void shouldGetRoleByUserIdAndTeamId() {
-        Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, ORDINARY_CORAL_LYNX_TEAM());
-        createMembership(expectedMembership)
-                .statusCode(201);
-
-        getRole(expectedMembership.getUserId(), expectedMembership.getTeamId())
-                .statusCode(200)
-                .body("name", equalTo(expectedMembership.getRole().getName()));
-    }
-
-    @Test
-    void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingUserId() {
-        getRole(null, ORDINARY_CORAL_LYNX_TEAM_UUID)
-                .validate(400, "Bad Request");
-    }
-
-    @Test
-    void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingTeamId() {
-        getRole(GIANNI_USER_UUID, null)
-                .validate(400, "Bad Request");
-    }
-
-    @Test
-    void shouldFailToGetRoleByUserIdAndTeamIdWhenItDoesNotExist() {
-        mockGetTeamById(mockServer, UUID_1, null);
-        getRole(GIANNI_USER_UUID, UUID_1)
-                .validate(404, format("Team %s not found", UUID_1));
-    }
 }

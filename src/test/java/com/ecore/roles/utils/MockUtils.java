@@ -1,7 +1,7 @@
 package com.ecore.roles.utils;
 
-import com.ecore.roles.client.model.Team;
-import com.ecore.roles.client.model.User;
+import com.ecore.roles.domain.client.resources.Team;
+import com.ecore.roles.domain.client.resources.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpMethod;
@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -18,7 +19,20 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 public class MockUtils {
 
-    public static void mockGetUserById(MockRestServiceServer mockServer, UUID userId, User user) {
+    public static void givenGetUsersAnswer(MockRestServiceServer mockServer, List<User> users) {
+        try {
+            mockServer.expect(requestTo("http://test.com/users"))
+                    .andExpect(method(HttpMethod.GET))
+                    .andRespond(
+                            withStatus(HttpStatus.OK)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .body(new ObjectMapper().writeValueAsString(users)));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void givenGetUserByIdAnswer(MockRestServiceServer mockServer, UUID userId, User user) {
         try {
             mockServer.expect(requestTo("http://test.com/users/" + userId))
                     .andExpect(method(HttpMethod.GET))
@@ -31,7 +45,20 @@ public class MockUtils {
         }
     }
 
-    public static void mockGetTeamById(MockRestServiceServer mockServer, UUID teamId, Team team) {
+    public static void givenGetTeamsAnswer(MockRestServiceServer mockServer, List<Team> teams) {
+        try {
+            mockServer.expect(requestTo("http://test.com/teams"))
+                    .andExpect(method(HttpMethod.GET))
+                    .andRespond(
+                            withStatus(HttpStatus.OK)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .body(new ObjectMapper().writeValueAsString(teams)));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void givenGetTeamByIdAnswer(MockRestServiceServer mockServer, UUID teamId, Team team) {
         try {
             mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://test.com/teams/" + teamId))
                     .andExpect(method(HttpMethod.GET))
